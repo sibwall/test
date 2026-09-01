@@ -366,6 +366,10 @@ public class CopeActivity extends Activity {
 
         if (isDeviceOwner()) return;
 
+        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        
+        if (!dpm.isOrganizationOwnedDeviceWithManagedProfile()) return;
+
         try {
             LauncherApps launcherApps = (LauncherApps) getSystemService(Context.LAUNCHER_APPS_SERVICE);
             UserManager userManager = (UserManager) getSystemService(Context.USER_SERVICE);
