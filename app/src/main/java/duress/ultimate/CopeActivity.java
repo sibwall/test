@@ -336,12 +336,14 @@ public class CopeActivity extends Activity {
         if (parentDpm != null) {        
             trustAgentsDisabled = ((dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0) && ((parentDpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0);        
             biometricsDisabled = ((dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0) && ((parentDpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0);        
+            notificationsDisabled = ((dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS) != 0) && ((parentDpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS) != 0);  
         } else {       
             trustAgentsDisabled = (dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0;        
-            biometricsDisabled = (dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0;   
+            biometricsDisabled = (dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0; 
+            notificationsDisabled = (dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS) != 0;
         }
         
-        cbRestrictions2.setChecked(trustAgentsDisabled && biometricsDisabled);
+        cbRestrictions2.setChecked(trustAgentsDisabled && biometricsDisabled && notificationsDisabled);
     } else {
         cbRestrictions2.setChecked(false);
         cbRestrictions2.setAlpha(0.5f);
@@ -355,20 +357,30 @@ public class CopeActivity extends Activity {
         }
         int currentFeatures = dpm.getKeyguardDisabledFeatures(adminName);
         if (cbRestrictions2.isChecked()) {
-            int newFeatures = currentFeatures | DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS
-                    | DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS;
+            int newFeatures = currentFeatures 
+                | DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS
+                | DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS
+                | DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS;       
             dpm.setKeyguardDisabledFeatures(adminName, newFeatures);
             if (parentDpm != null) {    
                 int pcur = parentDpm.getKeyguardDisabledFeatures(adminName);    
-                parentDpm.setKeyguardDisabledFeatures(adminName, pcur | DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS | DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS);
+                parentDpm.setKeyguardDisabledFeatures(adminName, pcur 
+                    | DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS 
+                    | DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS
+                    | DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS);
             }
         } else {
-            int newFeatures = currentFeatures & ~DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS
-                    & ~DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS;
+           int newFeatures = currentFeatures 
+                & ~DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS
+                & ~DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS
+                & ~DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS;        
             dpm.setKeyguardDisabledFeatures(adminName, newFeatures);
             if (parentDpm != null) {
                 int pcur = parentDpm.getKeyguardDisabledFeatures(adminName);
-                parentDpm.setKeyguardDisabledFeatures(adminName, pcur & ~DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS & ~DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS);
+                parentDpm.setKeyguardDisabledFeatures(adminName, pcur 
+                    & ~DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS 
+                    & ~DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS
+                    & ~DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS);        
             }
         }
     });
