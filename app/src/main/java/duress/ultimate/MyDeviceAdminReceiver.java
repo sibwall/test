@@ -18,7 +18,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
         super.onReceive(context, intent);        
 		if (context != null) disableFRP(context);
 
-		if (!isCopeOwner) return;
+		if (!isCopeOwner(context)) return;
 		
 		Context appContext = context.getApplicationContext();
         context=null;
