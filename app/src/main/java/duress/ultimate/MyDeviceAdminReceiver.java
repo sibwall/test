@@ -26,12 +26,12 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 
 		try {
 		
-		KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-	    UserManager um = (UserManager) getSystemService(USER_SERVICE);					
+		KeyguardManager km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+	    UserManager um = (UserManager) context.getSystemService(Context.USER_SERVICE);					
                        
         if ( um.isUserUnlocked(android.os.Process.myUserHandle()) && (km.isKeyguardLocked() || !pm.isInteractive()) ) {			            			                		                                                    							
-		   DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(DEVICE_POLICY_SERVICE);                    								            				
+		   DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);                    								            				
 		   dpm.lockNow(1);							                        
 	    }
 		
