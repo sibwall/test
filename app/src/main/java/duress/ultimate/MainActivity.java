@@ -332,17 +332,39 @@ public class MainActivity extends Activity {
     private void render(String textValue) { text.setText(textValue); }
 
     
-
 	    private void renderMainSettingsMenu(String[] actions) {
         buttonBox.removeAllViews();
 
-        SharedPreferences p = getProtectedPrefs();
+		SharedPreferences p = getProtectedPrefs();
+        boolean isCloseWarningsEnabled = CryptoManager.getBoolean(p, CryptoManager.BFU_ALIAS, CLOSE_WARNINGS, true);
+        
+        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName adminName = new ComponentName(this, MyDeviceAdminReceiver.class);
+        boolean isDO = isDeviceOwner();
 
+        CheckBox checkBox = new CheckBox(this);
+        checkBox.setText(isEn() ? TEXT_TOGGLE_CLOSE_WARNINGS_EN : TEXT_TOGGLE_CLOSE_WARNINGS);
+        checkBox.setTextColor(Color.WHITE);
+        checkBox.setTextSize(16f);
+        checkBox.setChecked(isCloseWarningsEnabled);                
+        checkBox.setOnClickListener(v -> {
+            if (!checkBox.isChecked()) {
+                checkBox.setChecked(true);
+                render(isEn() ? TEXT_CONFIRM_DISABLE_WARNINGS_EN : TEXT_CONFIRM_DISABLE_WARNINGS);
+                renderButtons(isEn()
+                        ? new String[]{"Yes, disable closing of pop-up windows.", "No, keep closing of pop-up windows."}
+                        : new String[]{"Да, отключить закрытие всплывающих окон.", "Нет, оставить закрытие всплывающих окон."}, null, false);
+            } else {
+                CryptoManager.putBoolean(p, CryptoManager.BFU_ALIAS, CLOSE_WARNINGS, true);
+                Toast.makeText(MainActivity.this, isEn() ? TOAST_ENABLED_EN : TOAST_ENABLED, Toast.LENGTH_SHORT).show();
+            }
+        });
+        buttonBox.addView(checkBox);
+        
         CheckBox cbReboot = new CheckBox(this);
         cbReboot.setText(isEn() ? "Auto-reboot (30 minutes after screen off)" : "Авто-перезагрузка (30 мин после выкл экрана)");
         cbReboot.setTextColor(Color.WHITE);
-        cbReboot.setTextSize(16f);
-        boolean isDO = isDeviceOwner();
+        cbReboot.setTextSize(16f);        
         if (isDO) {
             cbReboot.setChecked(CryptoManager.getBoolean(p, CryptoManager.BFU_ALIAS, "auto_reboot", false));
         } else {
