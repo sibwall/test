@@ -214,29 +214,24 @@ public class CopeActivity extends Activity {
                 showDeviceOwnerInstruction();
                 return;
             }
-            if (cbUsbAndDebug.isChecked()) { 
-                try {        
+            if (cbUsbAndDebug.isChecked()) {                 
                     dpm.setUsbDataSignalingEnabled(false);        
-                    //dpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);       
-                    //dpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);       
                     if (parentDpm != null) {             
                         parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);             
                         parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);        
-                    }       
-                    showUsbWarningAlert();    
-                } catch (Exception e) {         
-                    new AlertDialog.Builder(this)                                               
-                        .setMessage(e.getLocalizedMessage())            
-                        .setPositiveButton("ОК", null)
-                        .show();                    
-                }                           
+                    } else {
+                        dpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);       
+                        dpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);                           
+                    }
+                    showUsbWarningAlert();                                               
             } else {
                 dpm.setUsbDataSignalingEnabled(true);
-                dpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
-                dpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
                 if (parentDpm != null) {    
                     parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);    
                     parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
+                } else {
+                    dpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
+                    dpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);                
                 }
             }
         });
