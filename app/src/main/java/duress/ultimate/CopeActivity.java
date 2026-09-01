@@ -189,8 +189,7 @@ public class CopeActivity extends Activity {
     DevicePolicyManager parentDpm = isCopeOwner() ? dpm.getParentProfileInstance(adminName) : null;
 
     render(isEn() ? "Settings" : "Настройки");
-
-    // 1. USB и отладка (уже было правильно)
+    
     if (Build.VERSION.SDK_INT >= 31) {
         CheckBox cbUsbAndDebug = new CheckBox(this);
         cbUsbAndDebug.setText(isEn() ? "Disallow USB-connetions and debugging features" : "Запретить USB-подключения и функции отладки");
@@ -237,7 +236,6 @@ public class CopeActivity extends Activity {
         buttonBox.addView(cbUsbAndDebug);
     }
 
-    // 2. Автозаполнение, бэкап и носители (убрали внешний if (isDO))
     CheckBox cbRestrictions1 = new CheckBox(this);
     cbRestrictions1.setText(isEn() ? "Disallow autofill, backup, and mount physical media" : "Запретить автозаполнение, бэкап и монтирование физических носителей");
     cbRestrictions1.setTextColor(Color.WHITE);
@@ -283,7 +281,6 @@ public class CopeActivity extends Activity {
     });
     buttonBox.addView(cbRestrictions1);
 
-    // 3. Агенты доверия и биометрия (убрали проверку isDO и isGranted из обертки, перенесли внутрь)
     boolean isGranted = dpm != null && dpm.hasGrantedPolicy(new ComponentName(this, MyDeviceAdminReceiver.class), DeviceAdminInfo.USES_POLICY_DISABLE_KEYGUARD_FEATURES);
 
     CheckBox cbRestrictions2 = new CheckBox(this);
