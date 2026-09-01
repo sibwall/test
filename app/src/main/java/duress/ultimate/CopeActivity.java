@@ -325,7 +325,7 @@ public class CopeActivity extends Activity {
     boolean isGranted = dpm != null && dpm.hasGrantedPolicy(new ComponentName(this, MyDeviceAdminReceiver.class), DeviceAdminInfo.USES_POLICY_DISABLE_KEYGUARD_FEATURES);
 
     CheckBox cbRestrictions2 = new CheckBox(this);
-    cbRestrictions2.setText(isEn() ? "Disallow trust agents and biometric unlock" : "Запретить агентов доверия и биометрию");
+    cbRestrictions2.setText(isEn() ? "Disallow trust agents, notifications on the lock screen and biometric unlock" : "Запретить агентов доверия, уведомления на экране блокировки и разблокировку по биометрии");
     cbRestrictions2.setTextColor(Color.WHITE);
     cbRestrictions2.setTextSize(16f);
 
