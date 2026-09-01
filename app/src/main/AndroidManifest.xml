@@ -55,6 +55,7 @@
 			android:label="DefaultBrowserLink"
 			android:screenOrientation="portrait"
 			android:resizeableActivity="false"
+			android:process=":link"
 			android:excludeFromRecents="true"
 			android:name=".DefaultBrowserLink">
             <intent-filter>
