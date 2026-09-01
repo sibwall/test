@@ -98,6 +98,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 			for (PackageInfo pkg : allPackages) {    
 				if (pkg.packageName.equals(context.getPackageName())) continue;   
 				try { 
+					dpm.installExistingPackage(admin,  pkg.packageName)        
 					dpm.enableSystemApp(admin, pkg.packageName); 
 				} catch (Throwable e) {}
 			}
