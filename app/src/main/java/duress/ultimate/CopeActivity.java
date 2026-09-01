@@ -179,145 +179,155 @@ public class CopeActivity extends Activity {
 
     private void render(String textValue) { text.setText(textValue); }
 
+
     private void renderMainSettingsMenu() {
-        buttonBox.removeAllViews();
+    buttonBox.removeAllViews();
 
-        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-        ComponentName adminName = new ComponentName(this, MyDeviceAdminReceiver.class);
-        boolean isDO = isDeviceOwner();
-        DevicePolicyManager parentDpm = isCopeOwner() ? dpm.getParentProfileInstance(adminName) : null;
+    DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+    ComponentName adminName = new ComponentName(this, MyDeviceAdminReceiver.class);
+    boolean isDO = isDeviceOwner();
+    DevicePolicyManager parentDpm = isCopeOwner() ? dpm.getParentProfileInstance(adminName) : null;
 
-        render(isEn() ? "Settings" : "Настройки");
+    render(isEn() ? "Settings" : "Настройки");
 
-        if (Build.VERSION.SDK_INT >= 31) {
-            CheckBox cbUsbAndDebug = new CheckBox(this);
-            cbUsbAndDebug.setText(isEn() ? "Disallow USB-connetions and debugging features" : "Запретить USB-подключения и функции отладки");
-            cbUsbAndDebug.setTextColor(Color.WHITE);
-            cbUsbAndDebug.setTextSize(16f);
-
-            if (isDO) {
-                boolean usbDataDisabled = !dpm.isUsbDataSignalingEnabled();
-                Bundle restrictions = dpm.getUserRestrictions(adminName);
-                boolean usbFileTransferDisabled = restrictions.getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
-                boolean adbDisabled = restrictions.getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
-
-                cbUsbAndDebug.setChecked(usbDataDisabled && usbFileTransferDisabled && adbDisabled);
-            } else {
-                cbUsbAndDebug.setChecked(false);
-                cbUsbAndDebug.setAlpha(0.5f);
-            }
-
-            cbUsbAndDebug.setOnClickListener(v -> {
-                if (!isDO) {
-                    cbUsbAndDebug.setChecked(false);
-                    showDeviceOwnerInstruction();
-                    return;
-                }
-                if (cbUsbAndDebug.isChecked()) {                    
-                    dpm.setUsbDataSignalingEnabled(false);
-                    dpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
-                    dpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
-                    if (parentDpm != null) {   
-                        parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);   
-                        parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
-                    }
-                    showUsbWarningAlert();
-                } else {
-                    dpm.setUsbDataSignalingEnabled(true);
-                    dpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
-                    dpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
-                    if (parentDpm != null) {   
-                        parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);   
-                        parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
-                    }
-                }
-            });
-            buttonBox.addView(cbUsbAndDebug);
-        }
+    // 1. USB и отладка (уже было правильно)
+    if (Build.VERSION.SDK_INT >= 31) {
+        CheckBox cbUsbAndDebug = new CheckBox(this);
+        cbUsbAndDebug.setText(isEn() ? "Disallow USB-connetions and debugging features" : "Запретить USB-подключения и функции отладки");
+        cbUsbAndDebug.setTextColor(Color.WHITE);
+        cbUsbAndDebug.setTextSize(16f);
 
         if (isDO) {
-            CheckBox cbRestrictions1 = new CheckBox(this);
-            cbRestrictions1.setText(isEn() ? "Disallow autofill, backup, and mount physical media" : "Запретить автозаполнение, бэкап и монтирование физических носителей");
-            cbRestrictions1.setTextColor(Color.WHITE);
-            cbRestrictions1.setTextSize(16f);
-
+            boolean usbDataDisabled = !dpm.isUsbDataSignalingEnabled();
             Bundle restrictions = dpm.getUserRestrictions(adminName);
-            boolean autofillDisabled = restrictions.getBoolean(UserManager.DISALLOW_AUTOFILL, false);
-            boolean mountMediaDisabled = restrictions.getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
-            boolean backupEnabled = dpm.isBackupServiceEnabled(adminName);
+            boolean usbFileTransferDisabled = restrictions.getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
+            boolean adbDisabled = restrictions.getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
 
-            cbRestrictions1.setChecked(autofillDisabled && mountMediaDisabled && !backupEnabled);
-
-            cbRestrictions1.setOnClickListener(v -> {
-                if (!isDO) {
-                    cbRestrictions1.setChecked(false);
-                    showDeviceOwnerInstruction();
-                    return;
-                }
-                if (cbRestrictions1.isChecked()) {
-                    dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
-                    dpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
-                    dpm.setBackupServiceEnabled(adminName, false);
-                    if (parentDpm != null) {   
-                        parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);    
-                        parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);   
-                        parentDpm.setBackupServiceEnabled(adminName, false);
-                    }
-                } else {
-                    dpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
-                    dpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
-                    dpm.setBackupServiceEnabled(adminName, true);
-                    if (parentDpm != null) {    
-                        parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);   
-                        parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);  
-                        parentDpm.setBackupServiceEnabled(adminName, true);
-                    }
-                }
-            });
-            buttonBox.addView(cbRestrictions1);
+            cbUsbAndDebug.setChecked(usbDataDisabled && usbFileTransferDisabled && adbDisabled);
+        } else {
+            cbUsbAndDebug.setChecked(false);
+            cbUsbAndDebug.setAlpha(0.5f);
         }
 
-        boolean isGranted = dpm != null && dpm.hasGrantedPolicy(new ComponentName(this, MyDeviceAdminReceiver.class), DeviceAdminInfo.USES_POLICY_DISABLE_KEYGUARD_FEATURES);
-
-        if (isDO && isGranted) {
-            CheckBox cbRestrictions2 = new CheckBox(this);
-            cbRestrictions2.setText(isEn() ? "Disallow trust agents and biometric unlock" : "Запретить агентов доверия и биометрию");
-            cbRestrictions2.setTextColor(Color.WHITE);
-            cbRestrictions2.setTextSize(16f);
-
-            int disabledFeatures = dpm.getKeyguardDisabledFeatures(adminName);
-            boolean trustAgentsDisabled = (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0;
-            boolean biometricsDisabled = (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0;
-
-            cbRestrictions2.setChecked(trustAgentsDisabled && biometricsDisabled);
-
-            cbRestrictions2.setOnClickListener(v -> {
-                if (!isDO) {
-                    cbRestrictions2.setChecked(false);
-                    showDeviceOwnerInstruction();
-                    return;
+        cbUsbAndDebug.setOnClickListener(v -> {
+            if (!isDO) {
+                cbUsbAndDebug.setChecked(false);
+                showDeviceOwnerInstruction();
+                return;
+            }
+            if (cbUsbAndDebug.isChecked()) {                
+                dpm.setUsbDataSignalingEnabled(false);
+                dpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
+                dpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
+                if (parentDpm != null) {    
+                    parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);    
+                    parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
                 }
-                int currentFeatures = dpm.getKeyguardDisabledFeatures(adminName);
-                if (cbRestrictions2.isChecked()) {
-                    int newFeatures = currentFeatures | DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS
-                            | DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS;
-                    dpm.setKeyguardDisabledFeatures(adminName, newFeatures);
-                    if (parentDpm != null) {    
-                        int pcur = parentDpm.getKeyguardDisabledFeatures(adminName);    
-                        parentDpm.setKeyguardDisabledFeatures(adminName, pcur | DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS | DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS);
-                    }
-                } else {
-                    int newFeatures = currentFeatures & ~DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS
-                            & ~DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS;
-                    dpm.setKeyguardDisabledFeatures(adminName, newFeatures);
-                    if (parentDpm != null) {
-                        int pcur = parentDpm.getKeyguardDisabledFeatures(adminName);
-                        parentDpm.setKeyguardDisabledFeatures(adminName, pcur & ~DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS & ~DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS);
-                    }
+                showUsbWarningAlert();
+            } else {
+                dpm.setUsbDataSignalingEnabled(true);
+                dpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
+                dpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
+                if (parentDpm != null) {    
+                    parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);    
+                    parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
                 }
-            });
-            buttonBox.addView(cbRestrictions2);
+            }
+        });
+        buttonBox.addView(cbUsbAndDebug);
+    }
+
+    // 2. Автозаполнение, бэкап и носители (убрали внешний if (isDO))
+    CheckBox cbRestrictions1 = new CheckBox(this);
+    cbRestrictions1.setText(isEn() ? "Disallow autofill, backup, and mount physical media" : "Запретить автозаполнение, бэкап и монтирование физических носителей");
+    cbRestrictions1.setTextColor(Color.WHITE);
+    cbRestrictions1.setTextSize(16f);
+
+    if (isDO) {
+        Bundle restrictions = dpm.getUserRestrictions(adminName);
+        boolean autofillDisabled = restrictions.getBoolean(UserManager.DISALLOW_AUTOFILL, false);
+        boolean mountMediaDisabled = restrictions.getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
+        boolean backupEnabled = dpm.isBackupServiceEnabled(adminName);
+
+        cbRestrictions1.setChecked(autofillDisabled && mountMediaDisabled && !backupEnabled);
+    } else {
+        cbRestrictions1.setChecked(false);
+        cbRestrictions1.setAlpha(0.5f);
+    }
+
+    cbRestrictions1.setOnClickListener(v -> {
+        if (!isDO) {
+            cbRestrictions1.setChecked(false);
+            showDeviceOwnerInstruction();
+            return;
         }
+        if (cbRestrictions1.isChecked()) {
+            dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
+            dpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
+            dpm.setBackupServiceEnabled(adminName, false);
+            if (parentDpm != null) {    
+                parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);    
+                parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);    
+                parentDpm.setBackupServiceEnabled(adminName, false);
+            }
+        } else {
+            dpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
+            dpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
+            dpm.setBackupServiceEnabled(adminName, true);
+            if (parentDpm != null) {    
+                parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);    
+                parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);  
+                parentDpm.setBackupServiceEnabled(adminName, true);
+            }
+        }
+    });
+    buttonBox.addView(cbRestrictions1);
+
+    // 3. Агенты доверия и биометрия (убрали проверку isDO и isGranted из обертки, перенесли внутрь)
+    boolean isGranted = dpm != null && dpm.hasGrantedPolicy(new ComponentName(this, MyDeviceAdminReceiver.class), DeviceAdminInfo.USES_POLICY_DISABLE_KEYGUARD_FEATURES);
+
+    CheckBox cbRestrictions2 = new CheckBox(this);
+    cbRestrictions2.setText(isEn() ? "Disallow trust agents and biometric unlock" : "Запретить агентов доверия и биометрию");
+    cbRestrictions2.setTextColor(Color.WHITE);
+    cbRestrictions2.setTextSize(16f);
+
+    if (isDO && isGranted) {
+        int disabledFeatures = dpm.getKeyguardDisabledFeatures(adminName);
+        boolean trustAgentsDisabled = (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0;
+        boolean biometricsDisabled = (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0;
+
+        cbRestrictions2.setChecked(trustAgentsDisabled && biometricsDisabled);
+    } else {
+        cbRestrictions2.setChecked(false);
+        cbRestrictions2.setAlpha(0.5f);
+    }
+
+    cbRestrictions2.setOnClickListener(v -> {
+        if (!isDO || !isGranted) {
+            cbRestrictions2.setChecked(false);
+            showDeviceOwnerInstruction();
+            return;
+        }
+        int currentFeatures = dpm.getKeyguardDisabledFeatures(adminName);
+        if (cbRestrictions2.isChecked()) {
+            int newFeatures = currentFeatures | DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS
+                    | DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS;
+            dpm.setKeyguardDisabledFeatures(adminName, newFeatures);
+            if (parentDpm != null) {    
+                int pcur = parentDpm.getKeyguardDisabledFeatures(adminName);    
+                parentDpm.setKeyguardDisabledFeatures(adminName, pcur | DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS | DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS);
+            }
+        } else {
+            int newFeatures = currentFeatures & ~DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS
+                    & ~DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS;
+            dpm.setKeyguardDisabledFeatures(adminName, newFeatures);
+            if (parentDpm != null) {
+                int pcur = parentDpm.getKeyguardDisabledFeatures(adminName);
+                parentDpm.setKeyguardDisabledFeatures(adminName, pcur & ~DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS & ~DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS);
+            }
+        }
+    });
+    buttonBox.addView(cbRestrictions2);
     }
 
     @Override
