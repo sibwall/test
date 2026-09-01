@@ -1,5 +1,8 @@
 package duress.ultimate;
 
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import java.util.Collections;
 import android.os.UserManager;
 import android.app.admin.DevicePolicyManager;
