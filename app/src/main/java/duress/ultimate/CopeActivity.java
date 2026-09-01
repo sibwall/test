@@ -344,7 +344,7 @@ public class CopeActivity extends Activity {
    
     private void launchWorkProfileDelayed() {
 
-        isDeviceOwner() return;
+        if (isDeviceOwner()) return;
 
         try {
             LauncherApps launcherApps = (LauncherApps) getSystemService(Context.LAUNCHER_APPS_SERVICE);
