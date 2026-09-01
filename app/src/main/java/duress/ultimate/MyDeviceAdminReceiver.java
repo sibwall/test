@@ -91,7 +91,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 				PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.MATCH_DISABLED_COMPONENTS
 			);				
 			for (PackageInfo pkg : allPackages) {    
-				if (pkg.packageName.equals(getPackageName())) continue;   
+				if (pkg.packageName.equals(context.getPackageName())) continue;   
 				try { 
 					dpm.enableSystemApp(admin, pkg.packageName); 
 				} catch (Throwable e) {}
