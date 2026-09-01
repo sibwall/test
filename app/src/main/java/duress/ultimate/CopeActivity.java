@@ -1,0 +1,272 @@
+package duress.ultimate;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.admin.DeviceAdminInfo;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.UserManager;
+import android.view.Gravity;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import java.util.Locale;
+
+public class CopeActivity extends Activity {
+
+    private static final String PREFS = "prefs";
+
+    private TextView text;
+    private AlertDialog deviceOwnerDialog;
+    private AlertDialog usbWarningDialog;
+    private LinearLayout buttonBox;
+
+    private boolean isEn() { return !Locale.getDefault().getLanguage().equals("ru"); }
+
+    private SharedPreferences getProtectedPrefs() {
+        return getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS, MODE_PRIVATE);
+    }
+
+    private boolean isDeviceOwner() {
+        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        return dpm != null && dpm.isDeviceOwnerApp(getPackageName());
+    }
+
+    private void showDeviceOwnerInstruction() {
+        String msg = isEn()
+                ? "These features are available only if you have Device Owner rights. To obtain them, you must not have accounts or third-party users on the device. If they exist, delete them or just perform a factory reset.\nThen install this app again and use the adb command to activate Device Owner:\nadb shell dpm set-device-owner duress.ultimate/.MyDeviceAdminReceiver"
+                : "Эти функции доступны только если есть права Device Owner, для того чтобы их получить у вас не должно быть аккунтов и сторонних пользователей на устройстве. Если они есть, удалите их или просто сбросьте настройки.\nЗатем установите снова это приложение и используйте adb комманду для активации Device Owner:\nadb shell dpm set-device-owner duress.ultimate/.MyDeviceAdminReceiver";
+
+        deviceOwnerDialog = new AlertDialog.Builder(this)
+                .setMessage(msg)
+                .setPositiveButton("OK", (dialog, which) -> deviceOwnerDialog = null)
+                .create();
+
+        Window window = deviceOwnerDialog.getWindow();
+        if (window != null) {
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.gravity = Gravity.CENTER;
+            params.x = 0;
+            params.y = 0;
+            window.setAttributes(params);
+        }
+
+        deviceOwnerDialog.setOnDismissListener(dialog -> deviceOwnerDialog = null);
+        deviceOwnerDialog.show();
+
+        TextView messageView = deviceOwnerDialog.findViewById(android.R.id.message);
+        if (messageView != null) {
+            messageView.setTextIsSelectable(true);
+        }
+    }
+
+    private void showUsbWarningAlert() {
+        if (usbWarningDialog != null && usbWarningDialog.isShowing()) return;
+
+        String alertTitle = isEn() ? "Warning:" : "Предупреждение:";
+        String alertMsg = isEn()
+                ? "Disabling USB functions occurs at the operating system level and does not affect the low-level logic of the USB port, meaning it does not provide 100% protection.\nThis is just a step towards security.\nIf you want the ability to completely disable the USB port, it is better to use the GrapheneOS operating system."
+                : "Отключение USB функций происходит на уровне операционной системы и не затрагивает низкоуровневую логику USB порта, тоесть не даёт 100-процентной защиты.\nЭто лишь шаг к безопасности.\nЕсли вы хотите возможность полного отключения USB порта, лучше использовать операционную систему GrapheneOS.";
+
+        usbWarningDialog = new AlertDialog.Builder(this)
+                .setTitle(alertTitle)
+                .setMessage(alertMsg)
+                .setPositiveButton("OK", (dialog, which) -> usbWarningDialog = null)
+                .create();
+
+        Window window = usbWarningDialog.getWindow();
+        if (window != null) {
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.gravity = Gravity.CENTER;
+            params.x = 0;
+            params.y = 0;
+            window.setAttributes(params);
+        }
+
+        usbWarningDialog.setOnShowListener(dialog -> {
+            TextView titleView = usbWarningDialog.findViewById(getResources().getIdentifier("alertTitle", "id", "android"));
+            if (titleView != null) {
+                titleView.setTextColor(Color.parseColor("#ff5555"));
+            }
+            TextView msgView = usbWarningDialog.findViewById(android.R.id.message);
+            if (msgView != null) {
+                msgView.setTextIsSelectable(true);
+            }
+        });
+
+        usbWarningDialog.setOnDismissListener(dialog -> usbWarningDialog = null);
+        usbWarningDialog.show();
+    }
+
+    @Override
+    protected void onCreate(Bundle b) {
+        super.onCreate(b);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        ScrollView scrollView = new ScrollView(this);
+        scrollView.setFillViewport(true);
+        LinearLayout root = new LinearLayout(this);
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setGravity(Gravity.CENTER);
+        root.setPadding(64, 64, 64, 64);
+
+        text = new TextView(this);
+        text.setGravity(Gravity.CENTER_HORIZONTAL);
+        text.setTextSize(16f);
+        text.setTextColor(Color.WHITE);
+
+        buttonBox = new LinearLayout(this);
+        buttonBox.setOrientation(LinearLayout.VERTICAL);
+        buttonBox.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams boxParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        boxParams.setMargins(0, 64, 0, 0);
+        buttonBox.setLayoutParams(boxParams);
+
+        root.addView(text);
+        root.addView(buttonBox);
+        scrollView.addView(root);
+        setContentView(scrollView);
+
+        renderMainSettingsMenu();
+    }
+
+    private void render(String textValue) { text.setText(textValue); }
+
+    private void renderMainSettingsMenu() {
+        buttonBox.removeAllViews();
+
+        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName adminName = new ComponentName(this, MyDeviceAdminReceiver.class);
+        boolean isDO = isDeviceOwner();
+
+        render(isEn() ? "Settings" : "Настройки");
+
+        if (Build.VERSION.SDK_INT >= 31) {
+            CheckBox cbUsbAndDebug = new CheckBox(this);
+            cbUsbAndDebug.setText(isEn() ? "Disallow USB-connetions and debugging features" : "Запретить USB-подключения и функции отладки");
+            cbUsbAndDebug.setTextColor(Color.WHITE);
+            cbUsbAndDebug.setTextSize(16f);
+
+            if (isDO) {
+                boolean usbDataDisabled = !dpm.isUsbDataSignalingEnabled();
+                Bundle restrictions = dpm.getUserRestrictions(adminName);
+                boolean usbFileTransferDisabled = restrictions.getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
+                boolean adbDisabled = restrictions.getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
+
+                cbUsbAndDebug.setChecked(usbDataDisabled && usbFileTransferDisabled && adbDisabled);
+            } else {
+                cbUsbAndDebug.setChecked(false);
+                cbUsbAndDebug.setAlpha(0.5f);
+            }
+
+            cbUsbAndDebug.setOnClickListener(v -> {
+                if (!isDO) {
+                    cbUsbAndDebug.setChecked(false);
+                    showDeviceOwnerInstruction();
+                    return;
+                }
+                if (cbUsbAndDebug.isChecked()) {
+                    dpm.setUsbDataSignalingEnabled(false);
+                    dpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
+                    dpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
+                    showUsbWarningAlert();
+                } else {
+                    dpm.setUsbDataSignalingEnabled(true);
+                    dpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
+                    dpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
+                }
+            });
+            buttonBox.addView(cbUsbAndDebug);
+        }
+
+        if (isDO) {
+            CheckBox cbRestrictions1 = new CheckBox(this);
+            cbRestrictions1.setText(isEn() ? "Disallow autofill, backup, and mount physical media" : "Запретить автозаполнение, бэкап и монтирование физических носителей");
+            cbRestrictions1.setTextColor(Color.WHITE);
+            cbRestrictions1.setTextSize(16f);
+
+            Bundle restrictions = dpm.getUserRestrictions(adminName);
+            boolean autofillDisabled = restrictions.getBoolean(UserManager.DISALLOW_AUTOFILL, false);
+            boolean mountMediaDisabled = restrictions.getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
+            boolean backupEnabled = dpm.isBackupServiceEnabled(adminName);
+
+            cbRestrictions1.setChecked(autofillDisabled && mountMediaDisabled && !backupEnabled);
+
+            cbRestrictions1.setOnClickListener(v -> {
+                if (!isDO) {
+                    cbRestrictions1.setChecked(false);
+                    showDeviceOwnerInstruction();
+                    return;
+                }
+                if (cbRestrictions1.isChecked()) {
+                    dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
+                    dpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
+                    dpm.setBackupServiceEnabled(adminName, false);
+                } else {
+                    dpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
+                    dpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
+                    dpm.setBackupServiceEnabled(adminName, true);
+                }
+            });
+            buttonBox.addView(cbRestrictions1);
+        }
+
+        boolean isGranted = dpm != null && dpm.hasGrantedPolicy(new ComponentName(this, MyDeviceAdminReceiver.class), DeviceAdminInfo.USES_POLICY_DISABLE_KEYGUARD_FEATURES);
+
+        if (isDO && isGranted) {
+            CheckBox cbRestrictions2 = new CheckBox(this);
+            cbRestrictions2.setText(isEn() ? "Disallow trust agents and biometric unlock" : "Запретить агентов доверия и биометрию");
+            cbRestrictions2.setTextColor(Color.WHITE);
+            cbRestrictions2.setTextSize(16f);
+
+            int disabledFeatures = dpm.getKeyguardDisabledFeatures(adminName);
+            boolean trustAgentsDisabled = (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0;
+            boolean biometricsDisabled = (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0;
+
+            cbRestrictions2.setChecked(trustAgentsDisabled && biometricsDisabled);
+
+            cbRestrictions2.setOnClickListener(v -> {
+                if (!isDO) {
+                    cbRestrictions2.setChecked(false);
+                    showDeviceOwnerInstruction();
+                    return;
+                }
+                int currentFeatures = dpm.getKeyguardDisabledFeatures(adminName);
+                if (cbRestrictions2.isChecked()) {
+                    int newFeatures = currentFeatures | DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS
+                            | DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS;
+                    dpm.setKeyguardDisabledFeatures(adminName, newFeatures);
+                } else {
+                    int newFeatures = currentFeatures & ~DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS
+                            & ~DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS;
+                    dpm.setKeyguardDisabledFeatures(adminName, newFeatures);
+                }
+            });
+            buttonBox.addView(cbRestrictions2);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (deviceOwnerDialog != null && deviceOwnerDialog.isShowing()) {
+            deviceOwnerDialog.dismiss();
+        }
+        deviceOwnerDialog = null;
+
+        if (usbWarningDialog != null && usbWarningDialog.isShowing()) {
+            usbWarningDialog.dismiss();
+        }
+        usbWarningDialog = null;
+
+        super.onDestroy();
+    }
+}
