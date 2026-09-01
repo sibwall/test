@@ -1,5 +1,8 @@
 package duress.ultimate;
 
+import android.content.pm.PackageManager;
+import android.content.pm.PackageInfo;
+import android.content.pm.ApplicationInfo;
 import android.app.KeyguardManager;
 import android.os.PowerManager;
 import android.app.AlarmManager;
@@ -87,7 +90,6 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
            try {
 			if (isCopeOwner(context)) {
 			
-				ComponentName admin = new ComponentName(context, MyDeviceAdminReceiver.class);
 				PackageManager pm = context.getPackageManager();
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse("http://"));
 				browserIntent.addCategory(Intent.CATEGORY_BROWSABLE);
