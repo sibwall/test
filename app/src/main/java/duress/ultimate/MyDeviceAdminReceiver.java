@@ -86,7 +86,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
            try {
 			if (isCopeOwner(context)) {
 			Intent browserIntent = Intent.makeMainSelectorActivity(
-				Intent.ACTION_MAIN, Intent.CATEGORY_BROWSABLE
+				Intent.ACTION_MAIN, Intent.CATEGORY_LAUNCHER
 			);
 		   dpm.enableSystemApp(admin, browserIntent);   
            dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);	
