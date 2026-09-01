@@ -16,7 +16,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
         disableFRP(context);
     }
 
-    private boolean isDeviceOwner(Context context) {
+    private static boolean isDeviceOwner(Context context) {
         DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         boolean isCOPE = dpm != null && android.os.Build.VERSION.SDK_INT >= 30 && dpm.isOrganizationOwnedDeviceWithManagedProfile() && dpm.isProfileOwnerApp(context.getPackageName());
         boolean isOWNER = dpm != null && dpm.isDeviceOwnerApp(getPackageName());   
