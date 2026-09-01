@@ -264,12 +264,11 @@ public class CopeActivity extends Activity {
         if (cbRestrictions1.isChecked()) {   
             try {      
                 dpm.setBackupServiceEnabled(adminName, false);
+                dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);                                                            
                 if (parentDpm != null) {             
                     //parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);         
-                    parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);          
-                    parentDpm.setBackupServiceEnabled(adminName, false);     
+                    parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);                              
                 } else {
-                   //dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);                                          
                    dpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);                        
                 }                               
             } catch (Exception e) {        
