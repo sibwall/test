@@ -368,7 +368,7 @@ public class CopeActivity extends Activity {
 
         DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
         
-        if (!dpm.isOrganizationOwnedDeviceWithManagedProfile()) return;
+        if (dpm == null || !dpm.isOrganizationOwnedDeviceWithManagedProfile()) return;
 
         try {
             LauncherApps launcherApps = (LauncherApps) getSystemService(Context.LAUNCHER_APPS_SERVICE);
@@ -378,12 +378,11 @@ public class CopeActivity extends Activity {
                 List<UserHandle> profiles = userManager.getUserProfiles();
                 for (UserHandle profile : profiles) {
                    if (userManager.getSerialNumberForUser(profile) != 0) {
-                        launcherApps.startMainActivity(
-                            new ComponentName(getPackageName(), EntryActivity.class.getName()), 
-                            profile, null, null
-                        );
-                        finish();                       
-                        break;
+                        if (userManager.isManagedProfile(profile)) {                                           
+                            launcherApps.startMainActivity(new ComponentName(getPackageName(), EntryActivity.class.getName()), profile, null, null);                  
+                            finish();                                          
+                            break;              
+                        }
                     }
                 }
             }
