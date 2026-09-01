@@ -379,7 +379,7 @@ public class CopeActivity extends Activity {
                 List<UserHandle> profiles = userManager.getUserProfiles();
                 for (UserHandle profile : profiles) {
                    if (userManager.getSerialNumberForUser(profile) != 0) {
-                        if (userManager.isManagedProfile(profile)) {                                           
+                        if (!userManager.isManagedProfile()) {                                           
                             launcherApps.startMainActivity(new ComponentName(getPackageName(), EntryActivity.class.getName()), profile, null, null);                  
                             finish();                                          
                             break;              
