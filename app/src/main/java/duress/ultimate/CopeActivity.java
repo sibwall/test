@@ -1,5 +1,7 @@
 package duress.ultimate;
 
+import android.content.Intent;
+import android.widget.Button;
 import android.content.pm.LauncherApps;
 import android.os.UserHandle;
 import java.util.List;
