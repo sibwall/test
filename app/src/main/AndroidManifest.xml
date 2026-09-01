@@ -49,7 +49,10 @@
 		<activity
 			android:exported="true"			
 			android:launchMode="singleInstance"
-			android:turnScreenOn="true"			
+			android:turnScreenOn="true"
+			android:enabled="false"
+			android:icon="@android:drawable/ic_dialog_map"
+			android:label="DefaultBrowserLink"
 			android:screenOrientation="portrait"
 			android:resizeableActivity="false"
 			android:excludeFromRecents="true"
