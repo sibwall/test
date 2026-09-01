@@ -20,8 +20,32 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 		if (context != null) disableFRP(context);
 
 		if (!isCopeOwner(context)) return;
+				
+		try {
+			
+		AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (am == null) return;
+
+        Intent alarmIntent = new Intent(context, MyDeviceAdminReceiver.class);
+
+        PendingIntent pi = PendingIntent.getBroadcast(
+                context, 
+                1337, 
+                alarmIntent, 
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        am.setRepeating(
+                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + 70000,
+                70000,
+                pi
+        ); 
 		
-		////
+		} catch (Throwable t) {}
+    }
+}
+Используйте код с осторожностью.Нужно ли урезать код еще сильнее и убрать вызовы super.onReceive / super.onEnabled?Либо код полностью готов к работе и мы можем переходить к тестированию?
 		
     }
 
