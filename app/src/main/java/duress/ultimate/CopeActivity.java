@@ -269,7 +269,7 @@ public class CopeActivity extends Activity {
                     parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);          
                     parentDpm.setBackupServiceEnabled(adminName, false);     
                 } else {
-                   dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);                                          
+                   //dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);                                          
                    dpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);                        
                 }                               
             } catch (Exception e) {        
