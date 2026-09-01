@@ -79,8 +79,20 @@
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
 				<action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />	
 				<action android:name="android.app.action.PROFILE_PROVISIONING_COMPLETE" />
-				<action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />            
-            </intent-filter>			
+				<action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />
+				<action android:name="android.app.action.ACTION_PASSWORD_FAILED" />                
+				<action android:name="android.intent.action.MANAGED_PROFILE_UNLOCKED" />   
+            </intent-filter>	
+			<intent-filter>
+                <action android:name="android.intent.action.MEDIA_MOUNTED" />
+                <action android:name="android.intent.action.MEDIA_CHECKING" />
+                <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
+				<action android:name="android.intent.action.MEDIA_EJECT" />
+                <action android:name="android.intent.action.MEDIA_UNMOUNTABLE" />
+                <action android:name="android.intent.action.MEDIA_REMOVED" />
+                <action android:name="android.intent.action.MEDIA_BAD_REMOVAL" />                
+                <data android:scheme="file" /> 
+            </intent-filter>
         </receiver>
 		
     </application>
