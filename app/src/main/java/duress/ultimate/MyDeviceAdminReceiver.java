@@ -86,13 +86,15 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 
            try {
 			if (isCopeOwner(context)) {
+			
 			List<PackageInfo> allPackages = getPackageManager().getInstalledPackages(   
 				PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.MATCH_DISABLED_COMPONENTS
-			);
-				
+			);				
 			for (PackageInfo pkg : allPackages) {    
 				if (pkg.packageName.equals(getPackageName())) continue;   
-				try { dpm.enableSystemApp(adminComponent, pkg.packageName); } catch (Throwable e) {}
+				try { 
+					dpm.enableSystemApp(admin, pkg.packageName); 
+				} catch (Throwable e) {}
 			}
 
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);	
