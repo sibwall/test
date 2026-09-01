@@ -219,8 +219,8 @@ public class CopeActivity extends Activity {
                 dpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
                 dpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
                 if (parentDpm != null) {    
-                    //parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);    
-                    //parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
+                    parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);    
+                    parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
                 }
                 showUsbWarningAlert();
             } else {
@@ -228,8 +228,8 @@ public class CopeActivity extends Activity {
                 dpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
                 dpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
                 if (parentDpm != null) {    
-                    //parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);    
-                    //parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
+                    parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);    
+                    parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
                 }
             }
         });
@@ -264,18 +264,18 @@ public class CopeActivity extends Activity {
             dpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
             dpm.setBackupServiceEnabled(adminName, false);
             if (parentDpm != null) {    
-                //parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);    
-                //parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);    
-                //parentDpm.setBackupServiceEnabled(adminName, false);
+                parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);    
+                parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);    
+                parentDpm.setBackupServiceEnabled(adminName, false);
             }
         } else {
             dpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
             dpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
             dpm.setBackupServiceEnabled(adminName, true);
             if (parentDpm != null) {    
-                //parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);    
-                //parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);  
-                //parentDpm.setBackupServiceEnabled(adminName, true);
+                parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);    
+                parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);  
+                parentDpm.setBackupServiceEnabled(adminName, true);
             }
         }
     });
