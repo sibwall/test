@@ -26,6 +26,11 @@ import java.util.Locale;
 
 public class CopeActivity extends Activity {
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     private static final String PREFS = "prefs";
 
     private TextView text;
