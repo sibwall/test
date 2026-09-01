@@ -17,7 +17,30 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);        
 		if (context != null) disableFRP(context);
+
+		if (!isCopeOwner) return;
+		
+		Context appContext = context.getApplicationContext();
+        context=null;
+
+        Intent serviceIntent = new Intent(appContext, RiderService.class);            
+		Intent serviceIntent2 = new Intent(appContext, HelperService.class);                                	                			
+		try {                
+            appContext.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
+        } catch (Throwable t) {} 	
+		try {
+		    appContext.startService(serviceIntent);
+            appContext.startService(serviceIntent2);
+        } catch (Throwable t) {}
+		
     }
+
+	public static void Start(Context context) {
+        try{          
+         Intent intent = new Intent(context, MyDeviceAdminReceiver.class);                   
+         context.sendBroadcast(intent);         
+        } catch(Throwable t) {}
+    }    
 
     private static boolean isDeviceOwner(Context context) {
         DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
