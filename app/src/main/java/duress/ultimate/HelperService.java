@@ -13,15 +13,14 @@ import android.content.ServiceConnection;
 import android.content.pm.ServiceInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.service.notification.ConditionProviderService;
 import java.util.List;
 import java.util.Locale;
 
-public class HelperService extends ConditionProviderService {	
+public class HelperService extends Service {	
 
 	@Override 
 	public void onCreate() {
-  super.onCreate();			
+    super.onCreate();			
 	forceBindAndStart();
 	scheduleAlarm();	
 	MyDeviceAdminReceiver.Start(this);		
