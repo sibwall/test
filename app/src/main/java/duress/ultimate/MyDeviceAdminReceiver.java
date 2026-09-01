@@ -1,6 +1,5 @@
 package duress.ultimate;
 
-import android.net.Uri;
 import android.app.KeyguardManager;
 import android.os.PowerManager;
 import android.app.AlarmManager;
@@ -90,10 +89,9 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
            try {
 			if (isCopeOwner(context)) {
 
-			Intent browserIntent = new Intent(Intent.ACTION_VIEW);   
-			browserIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-            browserIntent.setData(Uri.parse("http:"));
-            dpm.enableSystemApp(admin, browserIntent);
+			try {
+			dpm.enableSystemApp(admin, "com.android.chrome");
+			} catch (Throwable e) {}
 			
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);	
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_APPS);		
