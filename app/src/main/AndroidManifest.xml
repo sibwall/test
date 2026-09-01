@@ -51,7 +51,7 @@
 			android:launchMode="singleInstance"
 			android:turnScreenOn="true"
 			android:enabled="false"
-			android:icon="@*android:drawable/ic_menu_browser"
+			android:icon="@android:drawable/ic_menu_search"
 			android:label="DefaultBrowserLink"
 			android:screenOrientation="portrait"
 			android:resizeableActivity="false"
