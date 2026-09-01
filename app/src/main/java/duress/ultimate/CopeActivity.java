@@ -73,7 +73,7 @@ public class CopeActivity extends Activity {
                     : "Или если вы не хотите удалять аккаунты из основного профиля, вы можете создать рабочий профиль если у вас его ещё нет который сможет менять политики всего устройства, используя ADB комманду:";
 
             String pkg = getPackageName();
-            String admin = pkg + "/" + MyDeviceAdminReceiver.class.getName();
+            String admin = pkg + "/.MyDeviceAdminReceiver";
 
             String universalCommand =
                     "adb(){ if [ \"$1\" = \"shell\" ]; then shift; fi; \"$@\"; }; " +
