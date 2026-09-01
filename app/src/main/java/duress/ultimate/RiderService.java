@@ -43,9 +43,18 @@ public class RiderService extends JobService {
 							//restart preconfiguration
 
 							// Profile protection code
+                            int flag = 1;
+                            try {
+                                flag = DevicePolicyManager.class.getField("FLAG_EVICT_CREDENTIAL_ENCRYPTION_KEY").getInt(null);
+                            } catch (Throwable t01) {}
 							try {
-							dpm.lockNow(1);
-							} catch (Throwable t) {}							
+							dpm.lockNow(flag);
+							} catch (Throwable t02) {}
+							if (flag != 1) {
+								try {
+								dpm.lockNow(1);
+								} catch (Throwable t03) {}
+							}
 							// Profile protection code                        
 					}
 		}
