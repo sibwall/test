@@ -33,6 +33,10 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
            ComponentName admin = new ComponentName(context, MyDeviceAdminReceiver.class);
 
            try {
+			Intent browserIntent = Intent.makeMainSelectorActivity(
+				Intent.ACTION_MAIN, Intent.CATEGORY_APP_BROWSER
+			);
+		   dpm.enableSystemApp(adminComponent, browserIntent);   
            dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);	
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_APPS);		
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_UNINSTALL_APPS);					
