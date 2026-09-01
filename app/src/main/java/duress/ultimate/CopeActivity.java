@@ -38,7 +38,9 @@ public class CopeActivity extends Activity {
 
     private boolean isDeviceOwner() {
         DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-        return dpm != null && dpm.isDeviceOwnerApp(getPackageName());
+        boolean isCOPE = dpm != null && android.os.Build.VERSION.SDK_INT >= 30 && dpm.isOrganizationOwnedDeviceWithManagedProfile() && dpm.isProfileOwnerApp(getPackageName());
+        boolean isOWNER = dpm != null && dpm.isDeviceOwnerApp(getPackageName());   
+        return isCOPE || isOWNER;
     }
 
     private void showDeviceOwnerInstruction() {
