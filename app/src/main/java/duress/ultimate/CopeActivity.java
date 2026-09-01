@@ -217,8 +217,8 @@ public class CopeActivity extends Activity {
             if (cbUsbAndDebug.isChecked()) { 
                 try {        
                     dpm.setUsbDataSignalingEnabled(false);        
-                    dpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);       
-                    dpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);       
+                    //dpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);       
+                    //dpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);       
                     if (parentDpm != null) {             
                         parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);             
                         parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);        
