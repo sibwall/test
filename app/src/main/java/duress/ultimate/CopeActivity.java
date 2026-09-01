@@ -197,11 +197,19 @@ public class CopeActivity extends Activity {
         cbUsbAndDebug.setTextSize(16f);
 
         if (isDO) {
-            boolean usbDataDisabled = !dpm.isUsbDataSignalingEnabled();
-            Bundle restrictions = dpm.getUserRestrictions(adminName);
-            boolean usbFileTransferDisabled = restrictions.getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
-            boolean adbDisabled = restrictions.getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
-
+            boolean usbFileTransferDisabled;
+            boolean adbDisabled;
+            
+            if (parentDpm != null) {
+                Bundle restrictions = parentDpm.getUserRestrictions(adminName);
+                usbFileTransferDisabled = restrictions.getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
+                adbDisabled = restrictions.getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
+            } else {
+                Bundle restrictions = dpm.getUserRestrictions(adminName);
+                usbFileTransferDisabled = restrictions.getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
+                adbDisabled = restrictions.getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
+            }
+            
             cbUsbAndDebug.setChecked(usbDataDisabled && usbFileTransferDisabled && adbDisabled);
         } else {
             cbUsbAndDebug.setChecked(false);
@@ -246,8 +254,14 @@ public class CopeActivity extends Activity {
     if (isDO) {
         Bundle restrictions = dpm.getUserRestrictions(adminName);
         boolean autofillDisabled = restrictions.getBoolean(UserManager.DISALLOW_AUTOFILL, false);
-        boolean mountMediaDisabled = restrictions.getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
         boolean backupEnabled = dpm.isBackupServiceEnabled(adminName);
+        
+        boolean mountMediaDisabled;
+        if (parentDpm != null) {
+            mountMediaDisabled = parentDpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
+        } else {
+            mountMediaDisabled = restrictions.getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
+        }
 
         cbRestrictions1.setChecked(autofillDisabled && mountMediaDisabled && !backupEnabled);
     } else {
