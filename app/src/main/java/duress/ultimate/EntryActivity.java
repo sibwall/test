@@ -8,6 +8,12 @@ import android.app.KeyguardManager;
 public class EntryActivity extends Activity {
 
     static boolean isLogged=true;
+
+	private boolean isCopeOwner() {
+        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        boolean isCOPE = dpm != null && android.os.Build.VERSION.SDK_INT >= 30 && dpm.isOrganizationOwnedDeviceWithManagedProfile() && dpm.isProfileOwnerApp(getPackageName());
+        return isCOPE;
+    }
 	
     @Override
     protected void onCreate(Bundle b) {		
@@ -38,7 +44,11 @@ public class EntryActivity extends Activity {
 
 	private void navigateToMainActivity() {        
         isLogged=true;
-		startActivity(new Intent(this, MainActivity.class));
+		if (!isCopeOwner()) {
+		    startActivity(new Intent(this, MainActivity.class));
+		} else {
+			startActivity(new Intent(this, CopeActivity.class));		
+		}
         finish();
     }
 
