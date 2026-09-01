@@ -261,30 +261,21 @@ public class CopeActivity extends Activity {
             showDeviceOwnerInstruction();
             return;
         }
-        if (cbRestrictions1.isChecked()) {   
-            try {      
+        if (cbRestrictions1.isChecked()) {               
                 dpm.setBackupServiceEnabled(adminName, false);
                 dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);                                                            
                 if (parentDpm != null) {             
-                    //parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);         
                     parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);                              
                 } else {
                    dpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);                        
-                }                               
-            } catch (Exception e) {        
-                new AlertDialog.Builder(this)
-                .setMessage(e.getLocalizedMessage())
-                .setPositiveButton("ОК", null)
-                .show();   
-            }
+                }                                           
         } else {
+            dpm.setBackupServiceEnabled(adminName, true);            
             dpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
-            dpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
-            dpm.setBackupServiceEnabled(adminName, true);
             if (parentDpm != null) {    
-                parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);    
-                parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);  
-                parentDpm.setBackupServiceEnabled(adminName, true);
+                parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);                
+            } else {
+                dpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
             }
         }
     });
