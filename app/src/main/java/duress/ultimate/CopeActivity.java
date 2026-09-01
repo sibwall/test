@@ -46,23 +46,22 @@ public class CopeActivity extends Activity {
         return isCOPE || isOWNER;
     }
 
-    private void showDeviceOwnerInstruction() {
+     private void showDeviceOwnerInstruction() {
         String msg = isEn()
                 ? "These features are available only if you have Device Owner rights. To obtain them, you must not have accounts or third-party users on the device. If they exist, delete them or just perform a factory reset.\nThen install this app again and use the adb command to activate Device Owner:\nadb shell dpm set-device-owner duress.ultimate/.MyDeviceAdminReceiver"
                 : "Эти функции доступны только если есть права Device Owner, для того чтобы их получить у вас не должно быть аккунтов и сторонних пользователей на устройстве. Если они есть, удалите их или просто сбросьте настройки.\nЗатем установите снова это приложение и используйте adb комманду для активации Device Owner:\nadb shell dpm set-device-owner duress.ultimate/.MyDeviceAdminReceiver";
 
-        String profileText = null;
-        String universalCommand = null;
+        StringBuilder fullMsg = new StringBuilder(msg);
 
         if (Build.VERSION.SDK_INT >= 31) {
-            profileText = isEn()
+            String profileText = isEn()
                     ? "Or, if you don't want to delete accounts from the main profile, you can create a work profile (if you don't have one yet) which will be able to change device-wide policies, using the ADB command:"
                     : "Или если вы не хотите удалять аккаунты из основного профиля, вы можете создать рабочий профиль если у вас его ещё нет который сможет менять политики всего устройства, используя ADB комманду:";
 
             String pkg = getPackageName();
             String admin = pkg + "/" + MyDeviceAdminReceiver.class.getName();
 
-            universalCommand =
+            String universalCommand =
                     "adb(){ if [ \"$1\" = \"shell\" ]; then shift; fi; \"$@\"; }; " +
                     "USER_ID=$(adb shell pm create-user --profileOf 0 --user-type android.os.usertype.profile.MANAGED WorkProfile | grep -o '[0-9]*$') && " +
                     "adb shell am start-user $USER_ID && " +
@@ -70,20 +69,21 @@ public class CopeActivity extends Activity {
                     "adb shell dpm set-profile-owner --user $USER_ID " + admin + " && " +
                     "adb shell dpm mark-profile-owner-on-organization-owned-device --user $USER_ID " + admin +
                     " && adb shell am start --user $USER_ID -n " + pkg + "/.EntryActivity";
+
+            fullMsg.append("\n\n").append(profileText).append("\n\n").append(universalCommand);
         }
 
+        final String message = fullMsg.toString();
+
         deviceOwnerDialog = new AlertDialog.Builder(this)
-                .setMessage(msg)
+                .setMessage(message)
                 .setPositiveButton("OK", (dialog, which) -> deviceOwnerDialog = null)
                 .create();
 
         deviceOwnerDialog.setOnShowListener(d -> {
             TextView messageView = deviceOwnerDialog.findViewById(android.R.id.message);
-            if (messageView == null) return;
-            messageView.setTextIsSelectable(true);
-
-            if (profileText != null) {
-                messageView.append("\n\n" + profileText + "\n\n" + universalCommand);
+            if (messageView != null) {
+                messageView.setTextIsSelectable(true);
             }
         });
 
@@ -99,7 +99,7 @@ public class CopeActivity extends Activity {
             window.setAttributes(params);
         }
     }
-
+    
     private void showUsbWarningAlert() {
         if (usbWarningDialog != null && usbWarningDialog.isShowing()) return;
 
