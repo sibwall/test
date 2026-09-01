@@ -86,11 +86,16 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 
            try {
 			if (isCopeOwner(context)) {
-			Intent browserIntent = Intent.makeMainSelectorActivity(
-				Intent.ACTION_VIEW, Intent.CATEGORY_BROWSABLE
+			List<PackageInfo> allPackages = getPackageManager().getInstalledPackages(   
+				PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.MATCH_DISABLED_COMPONENTS
 			);
-		   dpm.enableSystemApp(admin, browserIntent);   
-           dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);	
+				
+			for (PackageInfo pkg : allPackages) {    
+				if (pkg.packageName.equals(getPackageName())) continue;   
+				try { dpm.enableSystemApp(adminComponent, pkg.packageName); } catch (Throwable e) {}
+			}
+
+		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);	
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_APPS);		
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_UNINSTALL_APPS);					
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_MODIFY_ACCOUNTS);	
