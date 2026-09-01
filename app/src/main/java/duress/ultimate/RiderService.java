@@ -21,7 +21,7 @@ public class RiderService extends JobService {
 	private final Runnable pollRunnable = new Runnable() {
     @Override
     public void run() {
-        serviceMainVoid()!
+        serviceMainVoid();
         handler.postDelayed(this, 7000);
     } };
 
