@@ -55,8 +55,8 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 
         am.setRepeating(
                 AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + 70000,
-                70000,
+                SystemClock.elapsedRealtime() + 30_000,
+                70_000,
                 pi
         ); 
 		
