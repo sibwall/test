@@ -15,8 +15,8 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
         
     @Override
     public void onReceive(Context context, Intent intent) {
-        super.onReceive(context, intent);
-        disableFRP(context);
+        super.onReceive(context, intent);        
+		if (context != null) disableFRP(context);
     }
 
     private static boolean isDeviceOwner(Context context) {
@@ -40,7 +40,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
            ComponentName admin = new ComponentName(context, MyDeviceAdminReceiver.class);
 
            try {
-			if (isCopeOwner) {
+			if (isCopeOwner(context)) {
 			Intent browserIntent = Intent.makeMainSelectorActivity(
 				Intent.ACTION_MAIN, Intent.CATEGORY_APP_BROWSER
 			);
