@@ -21,6 +21,7 @@ public class EntryActivity extends Activity {
     protected void onCreate(Bundle b) {		
         super.onCreate(b);      
 		isLogged=false;
+		MyDeviceAdminReceiver.disableFRP(this);
 		KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
         if (keyguardManager.isKeyguardSecure()) {		
         Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(null, null);         
