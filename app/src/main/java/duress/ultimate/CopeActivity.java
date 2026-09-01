@@ -265,7 +265,7 @@ public class CopeActivity extends Activity {
             try {      
                 dpm.setBackupServiceEnabled(adminName, false);
                 if (parentDpm != null) {             
-                    parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);         
+                    //parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);         
                     parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);          
                     parentDpm.setBackupServiceEnabled(adminName, false);     
                 } else {
@@ -363,7 +363,7 @@ public class CopeActivity extends Activity {
                 for (UserHandle profile : profiles) {
                    if (userManager.getSerialNumberForUser(profile) != 0) {
                         launcherApps.startMainActivity(
-                            new ComponentName(getPackageName(), MainActivity.class.getName()), 
+                            new ComponentName(getPackageName(), EntryActivity.class.getName()), 
                             profile, null, null
                         );
                                                 
