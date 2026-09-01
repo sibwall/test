@@ -15,11 +15,18 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
         super.onReceive(context, intent);
         disableFRP(context);
     }
+
+    private boolean isDeviceOwner(Context context) {
+        DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        boolean isCOPE = dpm != null && android.os.Build.VERSION.SDK_INT >= 30 && dpm.isOrganizationOwnedDeviceWithManagedProfile() && dpm.isProfileOwnerApp(context.getPackageName());
+        boolean isOWNER = dpm != null && dpm.isDeviceOwnerApp(getPackageName());   
+        return isCOPE || isOWNER;
+    }
   
     static void disableFRP(Context context) {
            try {
            DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-           if (!dpm.isDeviceOwnerApp(context.getPackageName())) return;
+           if (!isDeviceOwner(context)) return;
            ComponentName admin = new ComponentName(context, MyDeviceAdminReceiver.class);
 
            if (android.os.Build.VERSION.SDK_INT >= 30) {
