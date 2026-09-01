@@ -16,6 +16,30 @@ import android.os.storage.*;
 
 public class RiderService extends JobService {  
 
+	private void serviceMainVoid() {		
+		KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+
+        if ((km != null && km.isKeyguardLocked()) || (pm != null && !pm.isInteractive())) {			            
+			            DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(DEVICE_POLICY_SERVICE);                    					
+			            			            
+			            UserManager um = (UserManager) getSystemService(USER_SERVICE);					
+                        if (um.isUserUnlocked(android.os.Process.myUserHandle())) {                        
+                            
+							//restart preconfiguration
+							Start.RunService(RiderService.this);
+							Start.RunService(RiderService.this);
+							Start.RunService(RiderService.this);
+							//restart preconfiguration
+
+							// Profile protection code
+							try {
+							dpm.lockNow(1);
+							} catch (Throwable t) {}							
+							// Profile protection code                        
+					}
+		}
+	}
 	
 	private static final int PERIODIC_JOB_ID = 1001;
     private static final int DELAYED_JOB_ID = 1002;
