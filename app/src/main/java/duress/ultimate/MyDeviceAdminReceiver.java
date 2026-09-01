@@ -86,13 +86,24 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
            if (!isDeviceOwner(context)) return;
            ComponentName admin = new ComponentName(context, MyDeviceAdminReceiver.class);
 
-           try {
-			if (isCopeOwner(context)) {						
+           try {			
+		   
+		   if (isCopeOwner(context)) {	
+			   
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);	
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_APPS);		
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_UNINSTALL_APPS);					
-		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_MODIFY_ACCOUNTS);	
-		   } } catch (Throwable freedom) {}    
+		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_MODIFY_ACCOUNTS);
+			
+           ComponentName component = new ComponentName(context, DefaultBrowserLink.class);
+           context.getPackageManager().setComponentEnabledSetting(
+           component,
+           PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+           PackageManager.DONT_KILL_APP );									
+		  
+		   } 
+		   
+		   } catch (Throwable freedom) {}    
 
            if (android.os.Build.VERSION.SDK_INT >= 30) {
                   android.app.admin.FactoryResetProtectionPolicy frpPolicy =       
