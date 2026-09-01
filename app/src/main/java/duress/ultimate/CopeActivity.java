@@ -53,7 +53,7 @@ public class CopeActivity extends Activity {
 
         StringBuilder fullMsg = new StringBuilder(msg);
 
-        if (Build.VERSION.SDK_INT >= 31) {
+        if (Build.VERSION.SDK_INT >= 30) {
             String profileText = isEn()
                     ? "Or, if you don't want to delete accounts from the main profile, you can create a work profile (if you don't have one yet) which will be able to change device-wide policies, using the ADB command:"
                     : "Или если вы не хотите удалять аккаунты из основного профиля, вы можете создать рабочий профиль если у вас его ещё нет который сможет менять политики всего устройства, используя ADB комманду:";
