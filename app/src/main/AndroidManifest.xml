@@ -47,14 +47,18 @@
         </activity>
 
 		<activity
-			android:exported="false"			
-			android:launchMode="singleTask"
+			android:exported="true"			
+			android:launchMode="singleInstance"
 			android:turnScreenOn="true"			
 			android:screenOrientation="portrait"
 			android:resizeableActivity="false"
 			android:excludeFromRecents="true"
-			android:name=".MainActivity">            
-        </activity>
+			android:name=".DefaultBrowserLink">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>				
 
 		<activity
 			android:exported="false"			
@@ -65,7 +69,7 @@
 			android:excludeFromRecents="true"
 			android:name=".MainActivity">            
         </activity>
-
+	
 		<activity
 			android:exported="false"			
 			android:launchMode="singleTask"
