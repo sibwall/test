@@ -1,5 +1,6 @@
 package duress.ultimate;
 
+import android.app.admin.DevicePolicyManager;
 import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
