@@ -378,36 +378,12 @@ public class CopeActivity extends Activity {
     btnParams.setMargins(0, 16, 0, 16);
     btnSetWorkPassword.setLayoutParams(btnParams);
 
-    
     btnSetWorkPassword.setOnClickListener(v -> {        
             Intent intent = new Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD);
             startActivity(intent);        
     });
-    
+
     buttonBox.addView(btnSetWorkPassword);
-
-        
-        Button btnClone = new Button(this);
-        btnClone.setText(isEn() ? "Clone apps to work profile" : "Клонировать приложения в рабочий профиль");
-        GradientDrawable backShape = new GradientDrawable();
-
-        backShape.setShape(GradientDrawable.RECTANGLE);
-        backShape.setColor(Color.parseColor("#34495e"));
-        backShape.setCornerRadius(6f);
-        btnClone.setBackground(backShape);
-        btnClone.setTextColor(Color.WHITE);
-        btnClone.setPadding(32, 32, 32, 32);
-        
-        LinearLayout.LayoutParams backParams = new LinearLayout.LayoutParams(        
-            LinearLayout.LayoutParams.MATCH_PARENT,      
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-
-        backParams.setMargins(0, 15, 0, 15);
-        btnClone.setLayoutParams(backParams);
-        btnClone.setOnClickListener(v -> startActivity(new Intent(this, SystemAppsActivity.class)));
-        buttonBox.addView(btnClone);
-    
     }
 
         Button btnBack = new Button(this);
