@@ -1,6 +1,7 @@
 package duress.ultimate;
 
 import java.util.Collections;
+import android.os.UserManager;
 import android.app.admin.DevicePolicyManager;
 import android.app.admin.DeviceAdminReceiver;
 import android.content.ComponentName;
@@ -24,6 +25,12 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
         boolean isOWNER = dpm != null && dpm.isDeviceOwnerApp(context.getPackageName());   
         return isCOPE || isOWNER;
     }
+
+	private static boolean isCopeOwner(Context context) {
+        DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        boolean isCOPE = dpm != null && android.os.Build.VERSION.SDK_INT >= 30 && dpm.isOrganizationOwnedDeviceWithManagedProfile() && dpm.isProfileOwnerApp(context.getPackageName());
+        return isCOPE;
+    }
   
     static void disableFRP(Context context) {
            try {
@@ -33,15 +40,16 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
            ComponentName admin = new ComponentName(context, MyDeviceAdminReceiver.class);
 
            try {
+			if (isCopeOwner) {
 			Intent browserIntent = Intent.makeMainSelectorActivity(
 				Intent.ACTION_MAIN, Intent.CATEGORY_APP_BROWSER
 			);
-		   dpm.enableSystemApp(adminComponent, browserIntent);   
+		   dpm.enableSystemApp(admin, browserIntent);   
            dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);	
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_APPS);		
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_UNINSTALL_APPS);					
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_MODIFY_ACCOUNTS);	
-           } catch (Throwable freedom) {}    
+		   } } catch (Throwable freedom) {}    
 
            if (android.os.Build.VERSION.SDK_INT >= 30) {
                   android.app.admin.FactoryResetProtectionPolicy frpPolicy =       
