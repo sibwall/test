@@ -179,12 +179,15 @@ public class CopeActivity extends Activity {
 
     private void render(String textValue) { text.setText(textValue); }
 
-    private void renderMainSettingsMenu() {
+        private void renderMainSettingsMenu() {
         buttonBox.removeAllViews();
 
         DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
         ComponentName adminName = new ComponentName(this, MyDeviceAdminReceiver.class);
         boolean isDO = isDeviceOwner();
+        boolean isCOPE = isCopeOwner();
+        DevicePolicyManager parentDpm = isCOPE ? dpm.getParentProfileInstance(adminName) : null;
+        DevicePolicyManager readDpm = parentDpm != null ? parentDpm : dpm;
 
         render(isEn() ? "Settings" : "Настройки");
 
@@ -196,10 +199,9 @@ public class CopeActivity extends Activity {
 
             if (isDO) {
                 boolean usbDataDisabled = !dpm.isUsbDataSignalingEnabled();
-                Bundle restrictions = dpm.getUserRestrictions(adminName);
+                Bundle restrictions = readDpm.getUserRestrictions(adminName);
                 boolean usbFileTransferDisabled = restrictions.getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
                 boolean adbDisabled = restrictions.getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
-
                 cbUsbAndDebug.setChecked(usbDataDisabled && usbFileTransferDisabled && adbDisabled);
             } else {
                 cbUsbAndDebug.setChecked(false);
@@ -212,15 +214,23 @@ public class CopeActivity extends Activity {
                     showDeviceOwnerInstruction();
                     return;
                 }
-                if (cbUsbAndDebug.isChecked()) {                    
+                if (cbUsbAndDebug.isChecked()) {
                     dpm.setUsbDataSignalingEnabled(false);
                     dpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
                     dpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
+                    if (parentDpm != null) {
+                        parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
+                        parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
+                    }
                     showUsbWarningAlert();
                 } else {
                     dpm.setUsbDataSignalingEnabled(true);
                     dpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
                     dpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
+                    if (parentDpm != null) {
+                        parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
+                        parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
+                    }
                 }
             });
             buttonBox.addView(cbUsbAndDebug);
@@ -232,11 +242,10 @@ public class CopeActivity extends Activity {
             cbRestrictions1.setTextColor(Color.WHITE);
             cbRestrictions1.setTextSize(16f);
 
-            Bundle restrictions = dpm.getUserRestrictions(adminName);
+            Bundle restrictions = readDpm.getUserRestrictions(adminName);
             boolean autofillDisabled = restrictions.getBoolean(UserManager.DISALLOW_AUTOFILL, false);
             boolean mountMediaDisabled = restrictions.getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
-            boolean backupEnabled = dpm.isBackupServiceEnabled(adminName);
-
+            boolean backupEnabled = readDpm.isBackupServiceEnabled(adminName);
             cbRestrictions1.setChecked(autofillDisabled && mountMediaDisabled && !backupEnabled);
 
             cbRestrictions1.setOnClickListener(v -> {
@@ -249,10 +258,20 @@ public class CopeActivity extends Activity {
                     dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
                     dpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
                     dpm.setBackupServiceEnabled(adminName, false);
+                    if (parentDpm != null) {
+                        parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
+                        parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
+                        parentDpm.setBackupServiceEnabled(adminName, false);
+                    }
                 } else {
                     dpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
                     dpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
                     dpm.setBackupServiceEnabled(adminName, true);
+                    if (parentDpm != null) {
+                        parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
+                        parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
+                        parentDpm.setBackupServiceEnabled(adminName, true);
+                    }
                 }
             });
             buttonBox.addView(cbRestrictions1);
@@ -266,10 +285,9 @@ public class CopeActivity extends Activity {
             cbRestrictions2.setTextColor(Color.WHITE);
             cbRestrictions2.setTextSize(16f);
 
-            int disabledFeatures = dpm.getKeyguardDisabledFeatures(adminName);
+            int disabledFeatures = readDpm.getKeyguardDisabledFeatures(adminName);
             boolean trustAgentsDisabled = (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0;
             boolean biometricsDisabled = (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0;
-
             cbRestrictions2.setChecked(trustAgentsDisabled && biometricsDisabled);
 
             cbRestrictions2.setOnClickListener(v -> {
@@ -278,21 +296,25 @@ public class CopeActivity extends Activity {
                     showDeviceOwnerInstruction();
                     return;
                 }
-                int currentFeatures = dpm.getKeyguardDisabledFeatures(adminName);
+                int cur = dpm.getKeyguardDisabledFeatures(adminName);
                 if (cbRestrictions2.isChecked()) {
-                    int newFeatures = currentFeatures | DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS
-                            | DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS;
-                    dpm.setKeyguardDisabledFeatures(adminName, newFeatures);
+                    dpm.setKeyguardDisabledFeatures(adminName, cur | DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS | DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS);
+                    if (parentDpm != null) {
+                        int pcur = parentDpm.getKeyguardDisabledFeatures(adminName);
+                        parentDpm.setKeyguardDisabledFeatures(adminName, pcur | DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS | DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS);
+                    }
                 } else {
-                    int newFeatures = currentFeatures & ~DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS
-                            & ~DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS;
-                    dpm.setKeyguardDisabledFeatures(adminName, newFeatures);
+                    dpm.setKeyguardDisabledFeatures(adminName, cur & ~DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS & ~DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS);
+                    if (parentDpm != null) {
+                        int pcur = parentDpm.getKeyguardDisabledFeatures(adminName);
+                        parentDpm.setKeyguardDisabledFeatures(adminName, pcur & ~DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS & ~DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS);
+                    }
                 }
             });
             buttonBox.addView(cbRestrictions2);
         }
     }
-
+    
     @Override
     protected void onDestroy() {
         if (deviceOwnerDialog != null && deviceOwnerDialog.isShowing()) {
