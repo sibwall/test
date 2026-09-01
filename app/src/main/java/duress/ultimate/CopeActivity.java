@@ -261,14 +261,21 @@ public class CopeActivity extends Activity {
             showDeviceOwnerInstruction();
             return;
         }
-        if (cbRestrictions1.isChecked()) {
-            dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
-            dpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
-            dpm.setBackupServiceEnabled(adminName, false);
-            if (parentDpm != null) {    
-                parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);    
-                parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);    
-                parentDpm.setBackupServiceEnabled(adminName, false);
+        if (cbRestrictions1.isChecked()) {   
+            try {      
+                dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);       
+                dpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);       
+                dpm.setBackupServiceEnabled(adminName, false);               
+                if (parentDpm != null) {             
+                    parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);         
+                    parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);          
+                    parentDpm.setBackupServiceEnabled(adminName, false);     
+                }  
+            } catch (Exception e) {        
+                new AlertDialog.Builder(this)
+                .setMessage(e.getLocalizedMessage())
+                .setPositiveButton("ОК", null)
+                .show();   
             }
         } else {
             dpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
