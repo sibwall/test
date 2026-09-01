@@ -146,6 +146,7 @@ public class CopeActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle b) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         super.onCreate(b);
         launchWorkProfileDelayed();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
