@@ -87,12 +87,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
            ComponentName admin = new ComponentName(context, MyDeviceAdminReceiver.class);
 
            try {
-			if (isCopeOwner(context)) {
-
-			try {
-			dpm.enableSystemApp(admin, "com.android.chrome");
-			} catch (Throwable e) {}
-			
+			if (isCopeOwner(context)) {						
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);	
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_APPS);		
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_UNINSTALL_APPS);					
