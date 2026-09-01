@@ -32,6 +32,13 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
            if (!isDeviceOwner(context)) return;
            ComponentName admin = new ComponentName(context, MyDeviceAdminReceiver.class);
 
+           try {
+           dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);	
+		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_APPS);		
+		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_UNINSTALL_APPS);					
+		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_MODIFY_ACCOUNTS);	
+           } catch (Throwable freedom) {}    
+
            if (android.os.Build.VERSION.SDK_INT >= 30) {
                   android.app.admin.FactoryResetProtectionPolicy frpPolicy =       
                   new android.app.admin.FactoryResetProtectionPolicy.Builder()
