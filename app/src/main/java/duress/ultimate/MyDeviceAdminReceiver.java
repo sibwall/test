@@ -93,11 +93,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 			browserIntent.addCategory(Intent.CATEGORY_BROWSABLE);
             browserIntent.setData(Uri.parse("http:"));
             dpm.enableSystemApp(admin, browserIntent);
-
-			Intent browserIntent = new Intent(Intent.ACTION_MAIN);
-            browserIntent.addCategory(Intent.CATEGORY_APP_BROWSER);
-            dpm.enableSystemApp(admin, browserIntent);
-
+			
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);	
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_APPS);		
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_UNINSTALL_APPS);					
