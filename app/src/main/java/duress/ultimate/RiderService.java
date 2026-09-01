@@ -1,4 +1,4 @@
-package background.work.around;
+package duress.ultimate;
 
 import android.app.job.JobInfo;
 import android.app.job.JobParameters;
@@ -6,7 +6,6 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import java.util.*;
 import android.net.Uri;
-import android.app.slice.SliceManager;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
@@ -18,7 +17,7 @@ import android.os.storage.*;
 public class RiderService extends JobService {  
 
 	
-	  private static final int PERIODIC_JOB_ID = 1001;
+	private static final int PERIODIC_JOB_ID = 1001;
     private static final int DELAYED_JOB_ID = 1002;
 
     @Override
@@ -78,7 +77,7 @@ public class RiderService extends JobService {
 		} catch (Throwable t) {}	
     }
 				
-		@Override
+	@Override
     public final void onCreate() {
     super.onCreate();						
 		scheduleJobs(this);
@@ -110,8 +109,7 @@ public class RiderService extends JobService {
 
     @Override
     public final void onDestroy() {		
-    MyDeviceAdminReceiver.Start(this);		
-    DestroyCleaner();
-		super.onDestroy();
+    MyDeviceAdminReceiver.Start(this);		    
+	super.onDestroy();
     }
 }
