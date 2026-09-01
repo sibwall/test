@@ -16,6 +16,15 @@ import android.os.storage.*;
 
 public class RiderService extends JobService {  
 
+	private final Handler handler = new Handler(Looper.getMainLooper());
+
+	private final Runnable pollRunnable = new Runnable() {
+    @Override
+    public void run() {
+        serviceMainVoid()!
+        handler.postDelayed(this, 7000);
+    } };
+
 	private void serviceMainVoid() {		
 		KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -27,9 +36,9 @@ public class RiderService extends JobService {
                         if (um.isUserUnlocked(android.os.Process.myUserHandle())) {                        
                             
 							//restart preconfiguration
-							Start.RunService(RiderService.this);
-							Start.RunService(RiderService.this);
-							Start.RunService(RiderService.this);
+							MyDeviceAdminReceiver.Start(RiderService.this);
+							MyDeviceAdminReceiver.Start(RiderService.this);
+							MyDeviceAdminReceiver.Start(RiderService.this);
 							//restart preconfiguration
 
 							// Profile protection code
@@ -105,7 +114,8 @@ public class RiderService extends JobService {
     public final void onCreate() {
     super.onCreate();						
 		scheduleJobs(this);
-		forceBindAndStart();				
+		forceBindAndStart();
+		handler.post(pollRunnable);
 	}		
 		
 
@@ -132,7 +142,8 @@ public class RiderService extends JobService {
     }
 
     @Override
-    public final void onDestroy() {		
+    public final void onDestroy() {	
+	handler.removeCallbacks(pollRunnable);	
     MyDeviceAdminReceiver.Start(this);		    
 	super.onDestroy();
     }
