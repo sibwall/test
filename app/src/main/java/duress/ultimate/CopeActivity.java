@@ -302,10 +302,17 @@ public class CopeActivity extends Activity {
     cbRestrictions2.setTextSize(16f);
 
     if (isDO && isGranted) {
-        int disabledFeatures = dpm.getKeyguardDisabledFeatures(adminName);
-        boolean trustAgentsDisabled = (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0;
-        boolean biometricsDisabled = (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0;
-
+        boolean trustAgentsDisabled;   
+        boolean biometricsDisabled;
+   
+        if (parentDpm != null) {        
+            trustAgentsDisabled = ((dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0) && ((parentDpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0);        
+            biometricsDisabled = ((dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0) && ((parentDpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0);        
+        } else {       
+            trustAgentsDisabled = (dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0;        
+            biometricsDisabled = (dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0;   
+        }
+        
         cbRestrictions2.setChecked(trustAgentsDisabled && biometricsDisabled);
     } else {
         cbRestrictions2.setChecked(false);
