@@ -1,6 +1,7 @@
 package duress.ultimate;
 
 import android.app.Service;
+import android.os.Binder;
 import android.app.Notification;
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
@@ -60,6 +61,10 @@ public class HelperService extends Service {
 	  return START_STICKY;
     }
 
+	@Override
+	public IBinder onBind(Intent intent) {
+    return new Binder();
+	}
 	
     @Override
     public void onDestroy() {        
