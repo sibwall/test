@@ -1,5 +1,7 @@
 package duress.ultimate;
 
+import android.app.KeyguardManager;
+import android.os.PowerManager;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.os.SystemClock;
@@ -31,7 +33,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 	    UserManager um = (UserManager) context.getSystemService(Context.USER_SERVICE);					
                        
         if ( um.isUserUnlocked(android.os.Process.myUserHandle()) && (km.isKeyguardLocked() || !pm.isInteractive()) ) {			            			                		                                                    							
-		   DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);                    								            				
+		   DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);                    								            				
 		   dpm.lockNow(1);							                        
 	    }
 		
