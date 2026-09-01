@@ -1,15 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="duress.ultimate">
 
-	<queries>
-    <intent>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="http" />
-    </intent>
-   </queries>
-	
-
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" /> 		
 	
