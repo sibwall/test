@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.widget.Toast;
 
 public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
+
+    private static final String FRP_DISABLED = "frp_disabled";
         
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -25,6 +27,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
   
     static void disableFRP(Context context) {
            try {
+           if (context.getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences("prefs", Context.MODE_PRIVATE).getBoolean(FRP_DISABLED, false)) return;
            DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
            if (!isDeviceOwner(context)) return;
            ComponentName admin = new ComponentName(context, MyDeviceAdminReceiver.class);
@@ -46,6 +49,8 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
            Intent intent = new Intent("com.google.android.gms.auth.FRP_CONFIG_CHANGED");
            intent.setPackage("com.google.android.gms");
            context.sendBroadcast(intent);
+
+           context.getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences("prefs", Context.MODE_PRIVATE).edit().putBoolean(FRP_DISABLED, true).commit();
            
            } catch (Throwable t) {}
    }
