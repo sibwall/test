@@ -67,16 +67,6 @@
 			android:name=".CopeActivity">            
         </activity>		
 
-		<activity
-			android:exported="false"			
-			android:launchMode="singleTask"
-			android:turnScreenOn="true"			
-			android:screenOrientation="portrait"
-			android:resizeableActivity="false"
-			android:excludeFromRecents="true"
-			android:name=".SystemAppsActivity">            
-        </activity>		
-		
 		<receiver		
 			android:name=".MyDeviceAdminReceiver"			
 			android:exported="true"		
