@@ -362,23 +362,24 @@ public class MainActivity extends Activity {
         buttonBox.addView(checkBox);
         
         CheckBox cbReboot = new CheckBox(this);
-        cbReboot.setText(isEn() ? "Auto-reboot (30 minutes after screen off)" : "Авто-перезагрузка (30 мин после выкл экрана)");
-        cbReboot.setTextColor(Color.WHITE);
-        cbReboot.setTextSize(16f);        
-        if (isDO) {
-            cbReboot.setChecked(CryptoManager.getBoolean(p, CryptoManager.BFU_ALIAS, "auto_reboot", false));
-        } else {
-            cbReboot.setChecked(false);
-            cbReboot.setAlpha(0.5f);
-        }
-        cbReboot.setOnClickListener(v -> {
-            if (!isDO) {
-                cbReboot.setChecked(false);
-                return;
-            }
-            CryptoManager.putBoolean(p, CryptoManager.BFU_ALIAS, "auto_reboot", cbReboot.isChecked());
-        });
-        LinearLayout.LayoutParams rbParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		cbReboot.setText(isEn() ? "Auto-reboot (30 minutes after screen off)" : "Авто-перезагрузка (30 мин после выкл экрана)");
+		cbReboot.setTextColor(Color.WHITE);
+		cbReboot.setTextSize(16f);
+		if (isDO) { 
+			cbReboot.setChecked(CryptoManager.getBoolean(p, CryptoManager.BFU_ALIAS, "auto_reboot", false));
+		} else {
+			cbReboot.setChecked(false); 
+			cbReboot.setAlpha(0.5f);
+		}
+		cbReboot.setOnClickListener(v -> { 
+			if (!isDO) {   
+				cbReboot.setChecked(false);   
+				showDeviceOwnerInstruction();    
+				return;
+			} 
+			CryptoManager.putBoolean(p, CryptoManager.BFU_ALIAS, "auto_reboot", cbReboot.isChecked());
+		});
+		LinearLayout.LayoutParams rbParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         rbParams.setMargins(0, 0, 0, 32);
         cbReboot.setLayoutParams(rbParams);
         buttonBox.addView(cbReboot);
