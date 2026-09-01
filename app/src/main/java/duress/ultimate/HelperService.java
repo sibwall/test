@@ -1,4 +1,4 @@
-package background.work.around;
+package duress.ultimate;
 
 import android.app.Notification;
 import android.app.AlarmManager;
