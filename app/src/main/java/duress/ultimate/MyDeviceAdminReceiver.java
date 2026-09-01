@@ -1,8 +1,5 @@
 package duress.ultimate;
 
-import android.content.pm.PackageManager;
-import android.content.pm.PackageInfo;
-import android.content.pm.ApplicationInfo;
 import android.app.KeyguardManager;
 import android.os.PowerManager;
 import android.app.AlarmManager;
@@ -89,26 +86,9 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 
            try {
 			if (isCopeOwner(context)) {
-			
-				PackageManager pm = context.getPackageManager();
-				Intent browserIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse("http://"));
-				browserIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-				
-				for (PackageInfo pkg : pm.getInstalledPackages(PackageManager.MATCH_UNINSTALLED_PACKAGES)) {
-					String pkgName = pkg.packageName;
-    
-					if (pkgName.equals(context.getPackageName()) || (pkg.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {        
-						continue;    
-					}
-        
-					browserIntent.setPackage(pkgName);
-					if (!pm.queryIntentActivities(browserIntent, PackageManager.MATCH_UNINSTALLED_PACKAGES).isEmpty()) {        
-						try {            
-							dpm.enableSystemApp(admin, pkgName);       
-						} catch (Throwable t) {}    
-					}
-				}
-
+			Intent browserIntent = Intent.makeMainSelectorActivity(
+				Intent.ACTION_VIEW, Intent.CATEGORY_BROWSABLE
+			);
 		   dpm.enableSystemApp(admin, browserIntent);   
            dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);	
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_APPS);		
