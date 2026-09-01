@@ -331,172 +331,51 @@ public class MainActivity extends Activity {
 
     private void render(String textValue) { text.setText(textValue); }
 
-    private void renderMainSettingsMenu(String[] actions) {
+    
+
+	    private void renderMainSettingsMenu(String[] actions) {
         buttonBox.removeAllViews();
 
         SharedPreferences p = getProtectedPrefs();
-        boolean isCloseWarningsEnabled = CryptoManager.getBoolean(p, CryptoManager.BFU_ALIAS, CLOSE_WARNINGS, true);
-        
-        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-        ComponentName adminName = new ComponentName(this, MyDeviceAdminReceiver.class);
+
+        CheckBox cbReboot = new CheckBox(this);
+        cbReboot.setText(isEn() ? "Auto-reboot (30 minutes after screen off)" : "Авто-перезагрузка (30 мин после выкл экрана)");
+        cbReboot.setTextColor(Color.WHITE);
+        cbReboot.setTextSize(16f);
         boolean isDO = isDeviceOwner();
-
-        CheckBox checkBox = new CheckBox(this);
-        checkBox.setText(isEn() ? TEXT_TOGGLE_CLOSE_WARNINGS_EN : TEXT_TOGGLE_CLOSE_WARNINGS);
-        checkBox.setTextColor(Color.WHITE);
-        checkBox.setTextSize(16f);
-        checkBox.setChecked(isCloseWarningsEnabled);                
-        checkBox.setOnClickListener(v -> {
-            if (!checkBox.isChecked()) {
-                checkBox.setChecked(true);
-                render(isEn() ? TEXT_CONFIRM_DISABLE_WARNINGS_EN : TEXT_CONFIRM_DISABLE_WARNINGS);
-                renderButtons(isEn()
-                        ? new String[]{"Yes, disable closing of pop-up windows.", "No, keep closing of pop-up windows."}
-                        : new String[]{"Да, отключить закрытие всплывающих окон.", "Нет, оставить закрытие всплывающих окон."}, null, false);
-            } else {
-                CryptoManager.putBoolean(p, CryptoManager.BFU_ALIAS, CLOSE_WARNINGS, true);
-                Toast.makeText(MainActivity.this, isEn() ? TOAST_ENABLED_EN : TOAST_ENABLED, Toast.LENGTH_SHORT).show();
-            }
-        });
-        buttonBox.addView(checkBox);
-        
-        if (Build.VERSION.SDK_INT >= 31) {
-		CheckBox cbUsbAndDebug = new CheckBox(this);
-        cbUsbAndDebug.setText(isEn() ? "Disallow USB-connetions and debugging features" : "Запретить USB-подключения и функции отладки");
-        cbUsbAndDebug.setTextColor(Color.WHITE);
-        cbUsbAndDebug.setTextSize(16f);
-        
         if (isDO) {
-            boolean usbDataDisabled = !dpm.isUsbDataSignalingEnabled();
-            Bundle restrictions = dpm.getUserRestrictions(adminName);
-            boolean usbFileTransferDisabled = restrictions.getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
-            boolean adbDisabled = restrictions.getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
-
-            cbUsbAndDebug.setChecked(usbDataDisabled && usbFileTransferDisabled && adbDisabled);
+            cbReboot.setChecked(CryptoManager.getBoolean(p, CryptoManager.BFU_ALIAS, "auto_reboot", false));
         } else {
-            cbUsbAndDebug.setChecked(false);
-            cbUsbAndDebug.setAlpha(0.5f);
+            cbReboot.setChecked(false);
+            cbReboot.setAlpha(0.5f);
         }
-
-        cbUsbAndDebug.setOnClickListener(v -> {
+        cbReboot.setOnClickListener(v -> {
             if (!isDO) {
-                cbUsbAndDebug.setChecked(false);
-                showDeviceOwnerInstruction();
+                cbReboot.setChecked(false);
                 return;
             }
-            if (cbUsbAndDebug.isChecked()) {                                
-                dpm.setUsbDataSignalingEnabled(false);                
-                dpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
-                dpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
-                showUsbWarningAlert();
-            } else {                
-                dpm.setUsbDataSignalingEnabled(true);                
-                dpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
-                dpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
-            }
+            CryptoManager.putBoolean(p, CryptoManager.BFU_ALIAS, "auto_reboot", cbReboot.isChecked());
         });
-        buttonBox.addView(cbUsbAndDebug);
-		}
-
-	if (isDO) {
-    CheckBox cbRestrictions1 = new CheckBox(this);
-    cbRestrictions1.setText(isEn() ? "Disallow autofill, backup, and mount physical media" : "Запретить автозаполнение, бэкап и монтирование физических носителей");
-    cbRestrictions1.setTextColor(Color.WHITE);
-    cbRestrictions1.setTextSize(16f);
-    
-    if (isDO) {
-        Bundle restrictions = dpm.getUserRestrictions(adminName);
-        boolean autofillDisabled = restrictions.getBoolean(UserManager.DISALLOW_AUTOFILL, false);
-        boolean mountMediaDisabled = restrictions.getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
-        boolean backupEnabled = dpm.isBackupServiceEnabled(adminName);
-
-        cbRestrictions1.setChecked(autofillDisabled && mountMediaDisabled && !backupEnabled);
-    } else {
-        cbRestrictions1.setChecked(false);
-        cbRestrictions1.setAlpha(0.5f);
-    }
-
-    cbRestrictions1.setOnClickListener(v -> {
-        if (!isDO) {
-            cbRestrictions1.setChecked(false);
-            showDeviceOwnerInstruction();
-            return;
-        }
-        if (cbRestrictions1.isChecked()) {
-			dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
-            dpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
-            dpm.setBackupServiceEnabled(adminName, false);
-        } else {
-            dpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
-            dpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
-            dpm.setBackupServiceEnabled(adminName, true);
-        }
-    });
-    buttonBox.addView(cbRestrictions1);
-	}
-
-	boolean isGranted = dpm != null && dpm.hasGrantedPolicy(new ComponentName(this, MyDeviceAdminReceiver.class), DeviceAdminInfo.USES_POLICY_DISABLE_KEYGUARD_FEATURES);
-
-	if (isDO && isGranted) {
-    CheckBox cbRestrictions2 = new CheckBox(this);
-    cbRestrictions2.setText(isEn() ? "Disallow trust agents and biometric unlock" : "Запретить агентов доверия и биометрию");
-    cbRestrictions2.setTextColor(Color.WHITE);
-    cbRestrictions2.setTextSize(16f);
-    
-    if (isDO) {
-        int disabledFeatures = dpm.getKeyguardDisabledFeatures(adminName);
-        boolean trustAgentsDisabled = (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0;
-        boolean biometricsDisabled = (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0;
-
-        cbRestrictions2.setChecked(trustAgentsDisabled && biometricsDisabled);
-    } else {
-        cbRestrictions2.setChecked(false);
-        cbRestrictions2.setAlpha(0.5f);
-    }
-
-    cbRestrictions2.setOnClickListener(v -> {
-        if (!isDO) {
-            cbRestrictions2.setChecked(false);
-            showDeviceOwnerInstruction();
-            return;
-        }
-        int currentFeatures = dpm.getKeyguardDisabledFeatures(adminName);
-        if (cbRestrictions2.isChecked()) {
-            int newFeatures = currentFeatures | DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS 
-                                            | DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS;
-            dpm.setKeyguardDisabledFeatures(adminName, newFeatures);
-        } else {
-            int newFeatures = currentFeatures & ~DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS 
-                                             & ~DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS;
-            dpm.setKeyguardDisabledFeatures(adminName, newFeatures);
-        }
-    });
-    buttonBox.addView(cbRestrictions2);
-	}
-		
-        CheckBox cbReboot = new CheckBox(this);
-		cbReboot.setText(isEn() ? "Auto-reboot (30 minutes after screen off)" : "Авто-перезагрузка (30 мин после выкл экрана)");
-		cbReboot.setTextColor(Color.WHITE);
-		cbReboot.setTextSize(16f);
-		if (isDO) { 
-			cbReboot.setChecked(CryptoManager.getBoolean(p, CryptoManager.BFU_ALIAS, "auto_reboot", false));
-		} else {
-			cbReboot.setChecked(false); 
-			cbReboot.setAlpha(0.5f);
-		}
-		cbReboot.setOnClickListener(v -> { 
-			if (!isDO) {   
-				cbReboot.setChecked(false);   
-				showDeviceOwnerInstruction();    
-				return;
-			} 
-			CryptoManager.putBoolean(p, CryptoManager.BFU_ALIAS, "auto_reboot", cbReboot.isChecked());
-		});
-		LinearLayout.LayoutParams rbParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams rbParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         rbParams.setMargins(0, 0, 0, 32);
         cbReboot.setLayoutParams(rbParams);
         buttonBox.addView(cbReboot);
-                
+
+        Button advBtn = new Button(this);
+        advBtn.setText(isEn() ? "Additional options" : "Дополнительные параметры");
+        GradientDrawable advShape = new GradientDrawable();
+        advShape.setShape(GradientDrawable.RECTANGLE);
+        advShape.setColor(Color.parseColor("#34495e"));
+        advShape.setCornerRadius(6f);
+        advBtn.setBackground(advShape);
+        advBtn.setTextColor(Color.WHITE);
+        advBtn.setPadding(32, 32, 32, 32);
+        LinearLayout.LayoutParams advParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        advParams.setMargins(0, 16, 0, 16);
+        advBtn.setLayoutParams(advParams);
+        advBtn.setOnClickListener(v -> startActivity(new Intent(this, CopeActivity.class)));
+        buttonBox.addView(advBtn);
+
         for (String a : actions) {
             Button b = new Button(this);
             b.setText(a);
