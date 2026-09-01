@@ -1,8 +1,5 @@
 package duress.ultimate;
 
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import java.util.List;
 import android.app.KeyguardManager;
 import android.os.PowerManager;
 import android.app.AlarmManager;
@@ -91,17 +88,10 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 
            try {
 			if (isCopeOwner(context)) {
-			
-			List<PackageInfo> allPackages = context.getPackageManager().getInstalledPackages(   
-				PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.MATCH_DISABLED_COMPONENTS
-			);				
-			for (PackageInfo pkg : allPackages) {    
-				if (pkg.packageName.equals(context.getPackageName())) continue;   
-				try { 
-					dpm.installExistingPackage(admin,  pkg.packageName);     
-					dpm.enableSystemApp(admin, pkg.packageName); 
-				} catch (Throwable e) {}
-			}
+
+			Intent browserIntent = new Intent(Intent.ACTION_MAIN);
+            browserIntent.addCategory(Intent.CATEGORY_APP_BROWSER);
+            dpm.enableSystemApp(admin, browserIntent);
 
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_UNKNOWN_SOURCES);	
 		   dpm.clearUserRestriction(new ComponentName(context, MyDeviceAdminReceiver.class), UserManager.DISALLOW_INSTALL_APPS);		
