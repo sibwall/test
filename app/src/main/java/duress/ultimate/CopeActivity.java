@@ -378,7 +378,7 @@ public class CopeActivity extends Activity {
                             new ComponentName(getPackageName(), EntryActivity.class.getName()), 
                             profile, null, null
                         );
-                                                
+                        finish();                       
                         break;
                     }
                 }
