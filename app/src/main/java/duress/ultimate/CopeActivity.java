@@ -46,6 +46,12 @@ public class CopeActivity extends Activity {
         return isCOPE || isOWNER;
     }
 
+    private boolean isCopeOwner() {
+        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        boolean isCOPE = dpm != null && android.os.Build.VERSION.SDK_INT >= 30 && dpm.isOrganizationOwnedDeviceWithManagedProfile() && dpm.isProfileOwnerApp(getPackageName());
+        return isCOPE;
+    }
+
      private void showDeviceOwnerInstruction() {
         String msg = isEn()
                 ? "These features are available only if you have Device Owner rights. To obtain them, you must not have accounts or third-party users on the device. If they exist, delete them or just perform a factory reset.\nThen install this app again and use the adb command to activate Device Owner:\nadb shell dpm set-device-owner duress.ultimate/.MyDeviceAdminReceiver"
@@ -206,7 +212,7 @@ public class CopeActivity extends Activity {
                     showDeviceOwnerInstruction();
                     return;
                 }
-                if (cbUsbAndDebug.isChecked()) {
+                if (cbUsbAndDebug.isChecked()) {                    
                     dpm.setUsbDataSignalingEnabled(false);
                     dpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
                     dpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
