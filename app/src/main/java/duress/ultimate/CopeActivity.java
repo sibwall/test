@@ -352,6 +352,57 @@ public class CopeActivity extends Activity {
         }
     });
     buttonBox.addView(cbRestrictions2);
+
+    if (isCopeOwner()) {
+    Button btnSetWorkPassword = new Button(this);
+    btnSetWorkPassword.setText(
+        isEn() ? "Set password for work profile"
+               : "Установить пароль для рабочего профиля"
+    );
+
+    GradientDrawable shape = new GradientDrawable();
+    shape.setShape(GradientDrawable.RECTANGLE);
+    shape.setColor(Color.parseColor("#34495e"));
+    shape.setCornerRadius(6f);
+
+    btnSetWorkPassword.setBackground(shape);
+    btnSetWorkPassword.setTextColor(Color.WHITE);
+    btnSetWorkPassword.setPadding(32, 32, 32, 32);
+
+    LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    );
+    btnParams.setMargins(0, 16, 0, 16);
+    btnSetWorkPassword.setLayoutParams(btnParams);
+
+    btnSetWorkPassword.setOnClickListener(v -> {        
+            Intent intent = new Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD);
+            startActivity(intent);        
+    });
+
+    buttonBox.addView(btnSetWorkPassword);
+    }
+
+        Button btnBack = new Button(this);
+        btnBack.setText(isEn() ? "Back" : "Назад");
+        GradientDrawable backShape = new GradientDrawable();
+        backShape.setShape(GradientDrawable.RECTANGLE);
+        backShape.setColor(Color.parseColor("#34495e"));
+        backShape.setCornerRadius(6f);
+        btnBack.setBackground(backShape);
+        btnBack.setTextColor(Color.WHITE);
+        btnBack.setPadding(32, 32, 32, 32);
+
+        LinearLayout.LayoutParams backParams = new LinearLayout.LayoutParams(   
+            LinearLayout.LayoutParams.MATCH_PARENT,  
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        backParams.setMargins(0, 16, 0, 16);
+        btnBack.setLayoutParams(backParams);
+        btnBack.setOnClickListener(v -> finish());
+        buttonBox.addView(btnBack);
     }
 
     @Override
