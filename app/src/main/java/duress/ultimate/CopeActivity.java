@@ -404,44 +404,46 @@ public class CopeActivity extends Activity {
 
     buttonBox.addView(btnSetWorkPassword);
                 
+       
     Button btnSetWorkAttempts = new Button(this);
 
-btnSetWorkAttempts.setText(
+        btnSetWorkAttempts.setText(
         isEn()
                 ? "Set unlock attempts limit for work profile"
                 : "Установить лимит попыток разблокировки рабочего профиля"
-);
+        );
 
-GradientDrawable attemptsShape = new GradientDrawable();
-attemptsShape.setShape(GradientDrawable.RECTANGLE);
-attemptsShape.setColor(Color.parseColor("#34495e"));
-attemptsShape.setCornerRadius(6f);
+        GradientDrawable attemptsShape = new GradientDrawable();
+        attemptsShape.setShape(GradientDrawable.RECTANGLE);
+        attemptsShape.setColor(Color.parseColor("#34495e"));
+        attemptsShape.setCornerRadius(6f);
 
-btnSetWorkAttempts.setBackground(attemptsShape);
-btnSetWorkAttempts.setTextColor(Color.WHITE);
-btnSetWorkAttempts.setPadding(32, 32, 32, 32);
+        btnSetWorkAttempts.setBackground(attemptsShape);
+        btnSetWorkAttempts.setTextColor(Color.WHITE);
+        btnSetWorkAttempts.setPadding(32, 32, 32, 32);
 
-LinearLayout.LayoutParams attemptsParams =
+        LinearLayout.LayoutParams attemptsParams =
         new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
 
-attemptsParams.setMargins(0, 16, 0, 16);
-btnSetWorkAttempts.setLayoutParams(attemptsParams);
 
-btnSetWorkAttempts.setOnClickListener(v -> {
-    render(
+        attemptsParams.setMargins(0, 15, 0, 15);
+        btnSetWorkAttempts.setLayoutParams(attemptsParams);
+        
+        btnSetWorkAttempts.setOnClickListener(v -> {    
+            render(
             isEn()
-                    ? "Set the maximum number of failed unlock attempts for the work profile."
-                    : "Задайте максимальное количество неверных попыток разблокировки для рабочего профиля."
-    );
+                    ? "Set the maximum number of failed unlock attempts before reset for the work profile. It can wipe main profile too. This limit will not change, regardless of the input length."
+                    : "Задайте максимальное количество неверных попыток разблокировки до сброса для рабочего профиля. Это может стереть и основной профиль. Это лимит не будет меняться вне зависимости от длины ввода."    
+            );
 
-    renderWorkProfileAttemptsInput();
-});
+          renderWorkProfileAttemptsInput();
+        });
 
-buttonBox.addView(btnSetWorkAttempts);
-
+        buttonBox.addView(btnSetWorkAttempts);
+            
     }
 
         Button btnBack = new Button(this);
@@ -459,7 +461,7 @@ buttonBox.addView(btnSetWorkAttempts);
             LinearLayout.LayoutParams.WRAP_CONTENT
         );
 
-        backParams.setMargins(0, 16, 0, 16);
+        backParams.setMargins(0, 15, 0, 15);
         btnBack.setLayoutParams(backParams);
         btnBack.setOnClickListener(v -> finish());
         buttonBox.addView(btnBack);
@@ -645,8 +647,7 @@ buttonBox.addView(btnSetWorkAttempts);
 
                 } else {
 
-                    // Максимум Integer.MAX_VALUE.
-                    if (currentInput.length() < 10) {
+                    if (currentInput.length() < 9) {
                         currentInput.append(key);
                     }
                 }
@@ -685,7 +686,8 @@ buttonBox.addView(btnSetWorkAttempts);
     }
 
     buttonBox.addView(keypadBox);
-}
+
+    }
 
    
     private void launchWorkProfileDelayed() {
