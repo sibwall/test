@@ -24,21 +24,20 @@ public class SystemAppsActivity extends Activity {
         String packageName;
         Drawable icon;
         boolean isAdded; 
-        boolean isSystem;
     }
 
     @Override
     protected void onResume() {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         super.onResume();
-        getWindow().getDecorView().setKeepScreenOn(true);
+		getWindow().getDecorView().setKeepScreenOn(true);
         getWindow().getDecorView().setSystemUiVisibility(
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+			View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+			| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+			| View.SYSTEM_UI_FLAG_FULLSCREEN
+			| View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+			| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+			| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         );
     }
 
@@ -83,9 +82,7 @@ public class SystemAppsActivity extends Activity {
         List<ApplicationInfo> allApps = pm.getInstalledApplications(PackageManager.MATCH_UNINSTALLED_PACKAGES);
 
         for (ApplicationInfo app : allApps) {
-            if (app.packageName.equals(getPackageName())) continue;
-
-            boolean isSystemApp = (app.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+            if ((app.flags & ApplicationInfo.FLAG_SYSTEM) == 0 || app.packageName.equals(getPackageName())) continue;
 
             boolean isActuallyInstalled = installedNames.contains(app.packageName);
             boolean isSavedInPrefs = prefs.contains(app.packageName);
@@ -99,7 +96,6 @@ public class SystemAppsActivity extends Activity {
             info.packageName = app.packageName;
             info.icon = app.loadIcon(pm);
             info.isAdded = isSavedInPrefs;
-            info.isSystem = isSystemApp;
             
             systemApps.add(info);
         }
@@ -152,13 +148,9 @@ public class SystemAppsActivity extends Activity {
         .setPositiveButton("Yes", (dialog, which) -> {
             try {
                 if (!app.isAdded) {
-                    if (app.isSystem) {
-                        dpm.enableSystemApp(admin, app.packageName);
-                        dpm.setApplicationHidden(admin, app.packageName, false);
-                    } else {
-                        dpm.installExistingPackage(admin, app.packageName);
-                        dpm.setApplicationHidden(admin, app.packageName, false);
-                    }
+                    
+                    dpm.enableSystemApp(admin, app.packageName);
+                    dpm.setApplicationHidden(admin, app.packageName, false);
                     prefs.edit().putBoolean(app.packageName, true).apply();
                     
                     app.isAdded = true;
