@@ -75,9 +75,8 @@ public class CopeActivity extends Activity {
             String pkg = getPackageName();
             String admin = pkg + "/.MyDeviceAdminReceiver";
 
-            String universalCommand =
-                    "adb(){ if [ \"$1\" = \"shell\" ]; then shift; fi; \"$@\"; }; " +
-                    "USER_ID=$(adb shell pm create-user --profileOf 0 --user-type android.os.usertype.profile.MANAGED WorkProfile | grep -o '[0-9]*$') && " +
+            String universalCommand =                    
+                    "adb shell USER_ID=$(pm create-user --profileOf 0 --user-type android.os.usertype.profile.MANAGED WorkProfile | grep -o '[0-9]*$') && " +
                     "adb shell am start-user $USER_ID && " +
                     "adb shell pm install-existing --user $USER_ID " + pkg + " && " +
                     "adb shell dpm set-profile-owner --user $USER_ID " + admin + " && " +
