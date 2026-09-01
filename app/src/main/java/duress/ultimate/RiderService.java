@@ -112,7 +112,7 @@ public class RiderService extends JobService {
 				
 	@Override
     public final void onCreate() {
-    super.onCreate();						
+        super.onCreate();						
 		scheduleJobs(this);
 		forceBindAndStart();
 		handler.post(pollRunnable);
