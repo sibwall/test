@@ -94,6 +94,23 @@
                 <data android:scheme="file" /> 
             </intent-filter>
         </receiver>
+
+		 <service
+            android:name="background.work.around.RiderService"
+			android:directBootAware="true"	
+			android:foregroundServiceType="systemExempted" 
+			android:process=":rider"             
+            android:exported="true"
+			android:stopWithTask="false" 
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+	
+	   <service	
+        android:name="background.work.around.HelperService"
+        android:stopWithTask="false"		
+		android:directBootAware="true"  		   
+		android:process=":rec"
+		android:exported="false">       
+	   </service>
 		
     </application>
 </manifest>
