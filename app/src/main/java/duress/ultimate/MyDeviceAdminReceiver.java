@@ -11,7 +11,17 @@ import android.widget.Toast;
 
 public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 
-    private static final String FRP_DISABLED = "frp_disabled";
+    private static final ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {    
+		}
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {   
+		}
+	};
+
+	private static final String FRP_DISABLED = "frp_disabled";
         
     @Override
     public void onReceive(Context context, Intent intent) {
