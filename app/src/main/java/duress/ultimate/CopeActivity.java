@@ -112,6 +112,7 @@ public class CopeActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        launchWorkProfileDelayed();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         ScrollView scrollView = new ScrollView(this);
@@ -270,5 +271,27 @@ public class CopeActivity extends Activity {
         usbWarningDialog = null;
 
         super.onDestroy();
+    }
+   
+    private void launchWorkProfileDelayed() {
+
+        try {
+            LauncherApps launcherApps = (LauncherApps) getSystemService(Context.LAUNCHER_APPS_SERVICE);
+            UserManager userManager = (UserManager) getSystemService(Context.USER_SERVICE);
+            
+            if (launcherApps != null && userManager != null) {
+                List<UserHandle> profiles = userManager.getUserProfiles();
+                for (UserHandle profile : profiles) {
+                   if (userManager.getSerialNumberForUser(profile) != 0) {
+                        launcherApps.startMainActivity(
+                            new ComponentName(getPackageName(), MainActivity.class.getName()), 
+                            profile, null, null
+                        );
+                                                
+                        break;
+                    }
+                }
+            }
+        } catch (Throwable t) {}
     }
 }
