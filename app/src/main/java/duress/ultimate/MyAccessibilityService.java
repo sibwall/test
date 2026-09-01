@@ -2,10 +2,8 @@ package duress.ultimate;
 
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
-import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.os.PowerManager;
 
 import android.app.AlarmManager;
 import android.os.SystemClock;
