@@ -197,18 +197,18 @@ public class CopeActivity extends Activity {
         cbUsbAndDebug.setTextSize(16f);
 
         if (isDO) {
+            boolean usbDataDisabled = !dpm.isUsbDataSignalingEnabled();
+    
             boolean usbFileTransferDisabled;
             boolean adbDisabled;
-            
-            if (parentDpm != null) {
-                Bundle restrictions = parentDpm.getUserRestrictions(adminName);
-                usbFileTransferDisabled = restrictions.getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
-                adbDisabled = restrictions.getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
-            } else {
-                Bundle restrictions = dpm.getUserRestrictions(adminName);
-                usbFileTransferDisabled = restrictions.getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
-                adbDisabled = restrictions.getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
-            }
+    
+          if (parentDpm != null) {
+             usbFileTransferDisabled = parentDpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
+             adbDisabled = parentDpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
+         } else {
+             usbFileTransferDisabled = dpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
+             adbDisabled = dpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
+         }
             
             cbUsbAndDebug.setChecked(usbDataDisabled && usbFileTransferDisabled && adbDisabled);
         } else {
@@ -252,15 +252,14 @@ public class CopeActivity extends Activity {
     cbRestrictions1.setTextSize(16f);
 
     if (isDO) {
-        Bundle restrictions = dpm.getUserRestrictions(adminName);
-        boolean autofillDisabled = restrictions.getBoolean(UserManager.DISALLOW_AUTOFILL, false);
+        boolean autofillDisabled = dpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_AUTOFILL, false);
         boolean backupEnabled = dpm.isBackupServiceEnabled(adminName);
-        
+    
         boolean mountMediaDisabled;
         if (parentDpm != null) {
-            mountMediaDisabled = parentDpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
+           mountMediaDisabled = parentDpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
         } else {
-            mountMediaDisabled = restrictions.getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
+           mountMediaDisabled = dpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
         }
 
         cbRestrictions1.setChecked(autofillDisabled && mountMediaDisabled && !backupEnabled);
