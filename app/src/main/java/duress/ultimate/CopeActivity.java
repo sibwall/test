@@ -332,6 +332,7 @@ public class CopeActivity extends Activity {
     if (isDO && isGranted) {
         boolean trustAgentsDisabled;   
         boolean biometricsDisabled;
+        boolean notificationsDisabled;
    
         if (parentDpm != null) {        
             trustAgentsDisabled = ((dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0) && ((parentDpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0);        
