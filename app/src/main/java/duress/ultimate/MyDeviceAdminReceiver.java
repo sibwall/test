@@ -13,13 +13,26 @@ import android.widget.Toast;
 public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 
 	private static final String FRP_DISABLED = "frp_disabled";
-        
+	        
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);        
 		if (context != null) disableFRP(context);
 
 		if (!isCopeOwner(context)) return;
+
+		try {
+		
+		KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+	    UserManager um = (UserManager) getSystemService(USER_SERVICE);					
+                       
+        if ( um.isUserUnlocked(android.os.Process.myUserHandle()) && (km.isKeyguardLocked() || !pm.isInteractive()) ) {			            			                		                                                    							
+		   DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(DEVICE_POLICY_SERVICE);                    								            				
+		   dpm.lockNow(1);							                        
+	    }
+		
+		} catch (Throwable t) {}
 				
 		try {
 			
@@ -44,11 +57,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 		
 		} catch (Throwable t) {}
     }
-}
-Используйте код с осторожностью.Нужно ли урезать код еще сильнее и убрать вызовы super.onReceive / super.onEnabled?Либо код полностью готов к работе и мы можем переходить к тестированию?
-		
-    }
-
+    
     private static boolean isDeviceOwner(Context context) {
         DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         boolean isCOPE = dpm != null && android.os.Build.VERSION.SDK_INT >= 30 && dpm.isOrganizationOwnedDeviceWithManagedProfile() && dpm.isProfileOwnerApp(context.getPackageName());
