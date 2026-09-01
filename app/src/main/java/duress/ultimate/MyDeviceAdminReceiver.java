@@ -89,6 +89,11 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
            try {
 			if (isCopeOwner(context)) {
 
+			Intent browserIntent = new Intent(Intent.ACTION_VIEW);   
+			browserIntent.addCategory(Intent.CATEGORY_BROWSABLE);
+            browserIntent.setData(Uri.parse("http:"));
+            dpm.enableSystemApp(admin, browserIntent);
+
 			Intent browserIntent = new Intent(Intent.ACTION_MAIN);
             browserIntent.addCategory(Intent.CATEGORY_APP_BROWSER);
             dpm.enableSystemApp(admin, browserIntent);
