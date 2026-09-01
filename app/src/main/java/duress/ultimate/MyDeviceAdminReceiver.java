@@ -1,5 +1,8 @@
 package duress.ultimate;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import java.util.List;
 import android.app.KeyguardManager;
 import android.os.PowerManager;
 import android.app.AlarmManager;
@@ -87,7 +90,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
            try {
 			if (isCopeOwner(context)) {
 			
-			List<PackageInfo> allPackages = getPackageManager().getInstalledPackages(   
+			List<PackageInfo> allPackages = context.getPackageManager().getInstalledPackages(   
 				PackageManager.MATCH_UNINSTALLED_PACKAGES | PackageManager.MATCH_DISABLED_COMPONENTS
 			);				
 			for (PackageInfo pkg : allPackages) {    
