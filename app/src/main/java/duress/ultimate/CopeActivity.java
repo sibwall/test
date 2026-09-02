@@ -216,21 +216,25 @@ public class CopeActivity extends Activity {
     ComponentName adminName = new ComponentName(this, MyDeviceAdminReceiver.class);
     boolean isDO = isDeviceOwner();
     DevicePolicyManager parentDpm = isCopeOwner() ? dpm.getParentProfileInstance(adminName) : null;
-
-    render(isEn() ? "Settings" : "Настройки");
     
     if (Build.VERSION.SDK_INT >= 31) {
         CheckBox cbUsbAndDebug = new CheckBox(this);
-        cbUsbAndDebug.setText(isEn() ? "Disallow USB-connetions and debugging features" : "Запретить USB-подключения и функции отладки");
+        cbUsbAndDebug.setText(isEn() ? "Disallow mount physical media, USB-connetions and debugging features" : "Запретить монтирование физических носителей, USB-подключения и функции отладки");
         cbUsbAndDebug.setTextColor(Color.WHITE);
         cbUsbAndDebug.setTextSize(16f);
 
         if (isDO) {
-            boolean usbDataDisabled = !dpm.isUsbDataSignalingEnabled();
-    
+            boolean usbDataDisabled = !dpm.isUsbDataSignalingEnabled();    
             boolean usbFileTransferDisabled;
             boolean adbDisabled;
-    
+
+           boolean mountMediaDisabled;
+           if (parentDpm != null) {
+               mountMediaDisabled = parentDpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
+           } else {
+               mountMediaDisabled = dpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
+           }
+                
           if (parentDpm != null) {
              usbFileTransferDisabled = parentDpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
              adbDisabled = parentDpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
@@ -239,7 +243,7 @@ public class CopeActivity extends Activity {
              adbDisabled = dpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
          }
             
-            cbUsbAndDebug.setChecked(usbDataDisabled && usbFileTransferDisabled && adbDisabled);
+            cbUsbAndDebug.setChecked(usbDataDisabled && usbFileTransferDisabled && adbDisabled && mountMediaDisabled);
         } else {
             cbUsbAndDebug.setChecked(false);
             cbUsbAndDebug.setAlpha(0.5f);
@@ -255,10 +259,12 @@ public class CopeActivity extends Activity {
                     dpm.setUsbDataSignalingEnabled(false);        
                     if (parentDpm != null) {             
                         parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);             
-                        parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);        
+                        parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES); 
+                        parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
                     } else {
                         dpm.addUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);       
-                        dpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);                           
+                        dpm.addUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
+                        dpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);                                                            
                     }
                     showUsbWarningAlert();                                               
             } else {
@@ -266,9 +272,11 @@ public class CopeActivity extends Activity {
                 if (parentDpm != null) {    
                     parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);    
                     parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);
+                    parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);                                            
                 } else {
                     dpm.clearUserRestriction(adminName, UserManager.DISALLOW_USB_FILE_TRANSFER);
-                    dpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES);                
+                    dpm.clearUserRestriction(adminName, UserManager.DISALLOW_DEBUGGING_FEATURES); 
+                    dpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);     
                 }
             }
         });
@@ -276,22 +284,14 @@ public class CopeActivity extends Activity {
     }
 
     CheckBox cbRestrictions1 = new CheckBox(this);
-    cbRestrictions1.setText(isEn() ? "Disallow mount physical media, and also autofill and backup services." : "Запретить монтирование физических носителей, а также сервисы автозаполнения и бэкапа.");
+    cbRestrictions1.setText(isEn() ? "Disallow autofill and backup services (if COPE only in work profile)." : "Запретить сервисы автозаполнения и резервного копирования (если COPE, только в рабочем профиле).");
     cbRestrictions1.setTextColor(Color.WHITE);
     cbRestrictions1.setTextSize(16f);
 
     if (isDO) {
         boolean autofillDisabled = dpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_AUTOFILL, false);
         boolean backupEnabled = dpm.isBackupServiceEnabled(adminName);
-    
-        boolean mountMediaDisabled;
-        if (parentDpm != null) {
-           mountMediaDisabled = parentDpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
-        } else {
-           mountMediaDisabled = dpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
-        }
-
-        cbRestrictions1.setChecked(autofillDisabled && mountMediaDisabled && !backupEnabled);
+        cbRestrictions1.setChecked(autofillDisabled && !backupEnabled);
     } else {
         cbRestrictions1.setChecked(false);
         cbRestrictions1.setAlpha(0.5f);
@@ -305,20 +305,10 @@ public class CopeActivity extends Activity {
         }
         if (cbRestrictions1.isChecked()) {               
                 dpm.setBackupServiceEnabled(adminName, false);
-                dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);                                                            
-                if (parentDpm != null) {             
-                    parentDpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);                              
-                } else {
-                   dpm.addUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);                        
-                }                                           
+                dpm.addUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);                                                                                                                       
         } else {
             dpm.setBackupServiceEnabled(adminName, true);            
-            dpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);
-            if (parentDpm != null) {    
-                parentDpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);                
-            } else {
-                dpm.clearUserRestriction(adminName, UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA);
-            }
+            dpm.clearUserRestriction(adminName, UserManager.DISALLOW_AUTOFILL);            
         }
     });
     buttonBox.addView(cbRestrictions1);
