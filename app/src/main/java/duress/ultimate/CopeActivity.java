@@ -90,8 +90,8 @@ public class CopeActivity extends Activity {
 
         if (Build.VERSION.SDK_INT >= 30) {
             String profileText = isEn()
-                    ? "Or, if you don't want to delete accounts from the main profile, you can create a work profile (if you don't have one yet) which will be able to change device-wide policies, using this ADB command in the Bash support environment:"
-                    : "Или если вы не хотите удалять аккаунты из основного профиля, вы можете создать рабочий профиль если у вас его ещё нет который сможет менять политики всего устройства, используя эту ADB комманду в среде поддержки Bash:";
+                    ? "Or, if you don't want to delete accounts from the main profile, you can create a work profile (if you don't have one yet) which will be able to change device-wide policies, using this ADB command via aShell:"
+                    : "Или если вы не хотите удалять аккаунты из основного профиля, вы можете создать рабочий профиль если у вас его ещё нет который сможет менять политики всего устройства, запустив эту ADB комманду через aShell:";
 
             String pkg = getPackageName();
             String admin = pkg + "/.MyDeviceAdminReceiver";
@@ -326,16 +326,14 @@ public class CopeActivity extends Activity {
     boolean isGranted = dpm != null && dpm.hasGrantedPolicy(new ComponentName(this, MyDeviceAdminReceiver.class), DeviceAdminInfo.USES_POLICY_DISABLE_KEYGUARD_FEATURES);
 
     CheckBox cbRestrictions2 = new CheckBox(this);
-    cbRestrictions2.setText(isEn() ? "Disallow trust agents, notifications on the lock screen and biometric unlock" : "Запретить агентов доверия, уведомления на экране блокировки и разблокировку по биометрии");
+    cbRestrictions2.setText(isEn() ? "Disallow trust agents, biometric unlock, and notifications if possible" : "Запретить агентов доверия, разблокировку по биометрии, и если возможно уведомления");
     cbRestrictions2.setTextColor(Color.WHITE);
     cbRestrictions2.setTextSize(16f);
 
     if (isDO && isGranted) {
         boolean trustAgentsDisabled;   
         boolean biometricsDisabled;        
-        boolean notificationsDisabled = Settings.Secure.getInt(getContentResolver(), "lock_screen_show_notifications", -1) == 0;
         
-   
         if (parentDpm != null) {        
             trustAgentsDisabled = ((dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0) && ((parentDpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0);        
             biometricsDisabled = ((dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0) && ((parentDpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0);                    
@@ -344,7 +342,7 @@ public class CopeActivity extends Activity {
             biometricsDisabled = (dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0; 
         }
         
-        cbRestrictions2.setChecked(trustAgentsDisabled && biometricsDisabled && notificationsDisabled);
+        cbRestrictions2.setChecked(trustAgentsDisabled && biometricsDisabled);
     } else {
         cbRestrictions2.setChecked(false);
         cbRestrictions2.setAlpha(0.5f);
