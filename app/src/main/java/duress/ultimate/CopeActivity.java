@@ -331,17 +331,16 @@ public class CopeActivity extends Activity {
 
     if (isDO && isGranted) {
         boolean trustAgentsDisabled;   
-        boolean biometricsDisabled;
-        boolean notificationsDisabled;
+        boolean biometricsDisabled;        
+        boolean notificationsDisabled = Settings.Secure.getInt(getContentResolver(), "lock_screen_show_notifications", -1) == 0;
+        
    
         if (parentDpm != null) {        
             trustAgentsDisabled = ((dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0) && ((parentDpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0);        
-            biometricsDisabled = ((dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0) && ((parentDpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0);        
-            notificationsDisabled = ((dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS) != 0) && ((parentDpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS) != 0);  
+            biometricsDisabled = ((dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0) && ((parentDpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0);                    
         } else {       
             trustAgentsDisabled = (dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0;        
             biometricsDisabled = (dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_BIOMETRICS) != 0; 
-            notificationsDisabled = (dpm.getKeyguardDisabledFeatures(adminName) & DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS) != 0;
         }
         
         cbRestrictions2.setChecked(trustAgentsDisabled && biometricsDisabled && notificationsDisabled);
