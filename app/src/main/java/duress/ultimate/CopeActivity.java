@@ -415,8 +415,17 @@ public class CopeActivity extends Activity {
     });
 
     buttonBox.addView(btnSetWorkPassword);
-                
-       
+
+     boolean isSeparate = false;
+     try {
+        DevicePolicyManager ldpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName ladminName = new ComponentName(this, MyDeviceAdminReceiver.class);     
+        isSeparate = !ldpm.isUsingUnifiedPassword(ladminName);
+    } catch (Throwable t) {
+        isSeparate = false;
+    }
+                    
+    if (isSeparate) {
     Button btnSetWorkAttempts = new Button(this);
 
         btnSetWorkAttempts.setText(
@@ -447,8 +456,8 @@ public class CopeActivity extends Activity {
         btnSetWorkAttempts.setOnClickListener(v -> {    
             render(
             isEn()
-                    ? "Set the maximum number of failed unlock attempts before reset for the work profile. It can wipe main profile too. This limit will not change, regardless of the input length."
-                    : "Задайте максимальное количество неверных попыток разблокировки до сброса для рабочего профиля. Это может стереть и основной профиль. Это лимит не будет меняться вне зависимости от длины ввода."    
+                    ? "Set the maximum number of failed unlock attempts before reset for the work profile. This reset can wipe main profile too. This limit will not change regardless of the input length."
+                    : "Задайте максимальное количество неверных попыток разблокировки до сброса для рабочего профиля. Этот сброс может стереть и основной профиль. Этот лимит не будет меняться вне зависимости от длины ввода."    
             );
 
           renderWorkProfileAttemptsInput();
@@ -456,7 +465,7 @@ public class CopeActivity extends Activity {
 
         buttonBox.addView(btnSetWorkAttempts);
             
-    }
+    }}
 
         Button btnBack = new Button(this);
         btnBack.setText(isEn() ? "Back" : "Назад");
