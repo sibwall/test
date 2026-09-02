@@ -351,7 +351,7 @@ public class CopeActivity extends Activity {
     cbRestrictions2.setOnClickListener(v -> {
         if (!isDO || !isGranted) {
             cbRestrictions2.setChecked(false);
-            showDeviceOwnerInstruction();
+            if (!isDO) showDeviceOwnerInstruction();
             return;
         }
         int currentFeatures = dpm.getKeyguardDisabledFeatures(adminName);
@@ -384,26 +384,41 @@ public class CopeActivity extends Activity {
         }
     });
     buttonBox.addView(cbRestrictions2);
-
-    CheckBox cbCameraAndCapture = new CheckBox(this);
-    cbCameraAndCapture.setText(isEn() ? "Disallow camera and screenshots" : "Запретить камеру и скриншоты");
-    cbCameraAndCapture.setTextColor(Color.WHITE);
-    cbCameraAndCapture.setTextSize(16f);
-
-    boolean isCamDisabled = dpm.getCameraDisabled(adminName);
-    boolean isScrDisabled = dpm.getScreenCaptureDisabled(adminName);
-
-    cbCameraAndCapture.setChecked(isCamDisabled && isScrDisabled);
-
-    cbCameraAndCapture.setOnClickListener(v -> {
-    boolean shouldDisable = cbCameraAndCapture.isChecked();
     
-    dpm.setCameraDisabled(adminName, shouldDisable);
-    dpm.setScreenCaptureDisabled(adminName, shouldDisable);
-    });
+        if (isDeviceOwner()) {
+        CheckBox cbCameraAndCapture = new CheckBox(this);
+        cbCameraAndCapture.setText(isEn() ? "Disallow camera and screenshots" : "Запретить камеру и скриншоты");
+        cbCameraAndCapture.setTextColor(Color.WHITE);
+        cbCameraAndCapture.setTextSize(15f);
 
-    buttonBox.addView(cbCameraAndCapture);
+        boolean isCamDisabled;
+        boolean isScrDisabled;
 
+
+        if (parentDpm != null) {    
+            isCamDisabled = dpm.getCameraDisabled(adminName) && parentDpm.getCameraDisabled(adminName);    
+            isScrDisabled = dpm.getScreenCaptureDisabled(adminName) && parentDpm.getScreenCaptureDisabled(adminName);
+        } else {    
+            isCamDisabled = dpm.getCameraDisabled(adminName);    
+            isScrDisabled = dpm.getScreenCaptureDisabled(adminName);
+        }
+
+        cbCameraAndCapture.setChecked(isCamDisabled && isScrDisabled);
+        cbCameraAndCapture.setOnClickListener(v -> {   
+        boolean shouldDisable = cbCameraAndCapture.isChecked();
+        
+        dpm.setCameraDisabled(adminName, shouldDisable);    
+        dpm.setScreenCaptureDisabled(adminName, shouldDisable);
+        
+            if (parentDpm != null) {       
+                parentDpm.setCameraDisabled(adminName, shouldDisable);        
+                parentDpm.setScreenCaptureDisabled(adminName, shouldDisable);
+    
+            } });
+        
+        buttonBox.addView(cbCameraAndCapture);
+    }
+    
     if (isCopeOwner()) {
     Button btnSetWorkPassword = new Button(this);
     btnSetWorkPassword.setText(
