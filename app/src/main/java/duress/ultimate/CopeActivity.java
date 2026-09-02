@@ -276,7 +276,7 @@ public class CopeActivity extends Activity {
     }
 
     CheckBox cbRestrictions1 = new CheckBox(this);
-    cbRestrictions1.setText(isEn() ? "Disallow autofill, backup, and mount physical media" : "Запретить автозаполнение, бэкап и монтирование физических носителей");
+    cbRestrictions1.setText(isEn() ? "Disallow mount physical media, and also autofill and backup services." : "Запретить монтирование физических носителей, а также сервисы автозаполнения и бэкапа.");
     cbRestrictions1.setTextColor(Color.WHITE);
     cbRestrictions1.setTextSize(16f);
 
