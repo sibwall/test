@@ -284,8 +284,8 @@ public class CopeActivity extends Activity {
     String cope_r="";
     String cope_e="";    
     if (isCopeOwner()) {
-        cope_r="внутри рабочего профиля";
-        cope_e="in work profile";
+        cope_r=" внутри рабочего профиля";
+        cope_e=" in work profile";
     }
     cbRestrictions1.setText(isEn() ? "Disallow autofill and backup services" + cope_e : "Запретить сервисы автозаполнения и резервного копирования" + cope_r);
     cbRestrictions1.setTextColor(Color.WHITE);
