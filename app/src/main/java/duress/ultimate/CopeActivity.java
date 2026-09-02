@@ -385,6 +385,25 @@ public class CopeActivity extends Activity {
     });
     buttonBox.addView(cbRestrictions2);
 
+    CheckBox cbCameraAndCapture = new CheckBox(this);
+    cbCameraAndCapture.setText(isEn() ? "Disallow camera and screenshots" : "Запретить камеру и скриншоты");
+    cbCameraAndCapture.setTextColor(Color.WHITE);
+    cbCameraAndCapture.setTextSize(16f);
+
+    boolean isCamDisabled = dpm.getCameraDisabled(adminName);
+    boolean isScrDisabled = dpm.getScreenCaptureDisabled(adminName);
+
+    cbCameraAndCapture.setChecked(isCamDisabled && isScrDisabled);
+
+    cbCameraAndCapture.setOnClickListener(v -> {
+    boolean shouldDisable = cbCameraAndCapture.isChecked();
+    
+    dpm.setCameraDisabled(adminName, shouldDisable);
+    dpm.setScreenCaptureDisabled(adminName, shouldDisable);
+    });
+
+    buttonBox.addView(cbCameraAndCapture);
+
     if (isCopeOwner()) {
     Button btnSetWorkPassword = new Button(this);
     btnSetWorkPassword.setText(
@@ -410,7 +429,8 @@ public class CopeActivity extends Activity {
 
     btnSetWorkPassword.setOnClickListener(v -> {        
             Intent intent = new Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD);
-            startActivity(intent);        
+            startActivity(intent);  
+            finish();
     });
 
     buttonBox.addView(btnSetWorkPassword);
