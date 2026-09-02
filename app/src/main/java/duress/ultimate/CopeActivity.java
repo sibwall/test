@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.content.pm.LauncherApps;
 import android.os.UserHandle;
 import java.util.List;
+import android.provider.Settings;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.admin.DeviceAdminInfo;
