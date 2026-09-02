@@ -283,7 +283,7 @@ public class CopeActivity extends Activity {
     CheckBox cbRestrictions1 = new CheckBox(this);
     String cope_r="";
     String cope_e="";    
-    if (isCopeOwner) {
+    if (isCopeOwner()) {
         cope_r="внутри рабочего профиля";
         cope_e="in work profile";
     }
