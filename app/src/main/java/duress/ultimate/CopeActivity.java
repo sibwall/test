@@ -633,13 +633,8 @@ public class CopeActivity extends Activity {
                                         MyDeviceAdminReceiver.class
                                 );
 
-                        DevicePolicyManager parentDpm =
-                                isCopeOwner()
-                                        ? dpm.getParentProfileInstance(adminName)
-                                        : null;
-
-                        if (parentDpm != null) {
-                            parentDpm.setMaximumFailedPasswordsForWipe(
+                                                
+                            dpm.setMaximumFailedPasswordsForWipe(
                                     adminName,
                                     attempts
                             );
@@ -653,7 +648,7 @@ public class CopeActivity extends Activity {
                             ).show();
 
                             renderMainSettingsMenu();
-                        }
+                        
 
                     } catch (NumberFormatException ignored) {
                     }
