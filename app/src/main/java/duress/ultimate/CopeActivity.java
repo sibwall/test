@@ -227,18 +227,14 @@ public class CopeActivity extends Activity {
             boolean usbDataDisabled = !dpm.isUsbDataSignalingEnabled();    
             boolean usbFileTransferDisabled;
             boolean adbDisabled;
-
-           boolean mountMediaDisabled;
-           if (parentDpm != null) {
-               mountMediaDisabled = parentDpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
-           } else {
-               mountMediaDisabled = dpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);
-           }
-                
-          if (parentDpm != null) {
+            boolean mountMediaDisabled;
+                          
+         if (parentDpm != null) {
+             mountMediaDisabled = parentDpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);           
              usbFileTransferDisabled = parentDpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
              adbDisabled = parentDpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
          } else {
+             mountMediaDisabled = dpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA, false);           
              usbFileTransferDisabled = dpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_USB_FILE_TRANSFER, false);
              adbDisabled = dpm.getUserRestrictions(adminName).getBoolean(UserManager.DISALLOW_DEBUGGING_FEATURES, false);
          }
