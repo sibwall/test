@@ -279,8 +279,15 @@ public class CopeActivity extends Activity {
         buttonBox.addView(cbUsbAndDebug);
     }
 
+    if (isDO) {
     CheckBox cbRestrictions1 = new CheckBox(this);
-    cbRestrictions1.setText(isEn() ? "Disallow autofill and backup services (if COPE only in work profile)." : "Запретить сервисы автозаполнения и резервного копирования (если COPE, только в рабочем профиле).");
+    String cope_r="";
+    String cope_e="";    
+    if (isCopeOwner) {
+        cope_r="(только в рамках рабочего профиля)";
+        cope_e="(only for work profile)";
+    }
+    cbRestrictions1.setText(isEn() ? "Disallow autofill and backup services" + cope_e : "Запретить сервисы автозаполнения и резервного копирования" + cope_r);
     cbRestrictions1.setTextColor(Color.WHITE);
     cbRestrictions1.setTextSize(16f);
 
@@ -308,6 +315,7 @@ public class CopeActivity extends Activity {
         }
     });
     buttonBox.addView(cbRestrictions1);
+    }
 
     boolean isGranted = dpm != null && dpm.hasGrantedPolicy(new ComponentName(this, MyDeviceAdminReceiver.class), DeviceAdminInfo.USES_POLICY_DISABLE_KEYGUARD_FEATURES);
 
