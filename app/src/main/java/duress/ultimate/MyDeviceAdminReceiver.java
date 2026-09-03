@@ -1,5 +1,7 @@
 package duress.ultimate;
 
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.content.pm.PackageManager;
 import android.app.KeyguardManager;
 import android.os.PowerManager;
