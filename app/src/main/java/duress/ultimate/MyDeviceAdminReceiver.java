@@ -45,8 +45,12 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
                 
                 Thread.sleep(150); 
 
+				dpm.lockNow();           
+
                 dpm.switchUser(adminComponent, ephemeralUser);
 
+				dpm.lockNow();                
+				
 				Thread.sleep(150);
 				
 				dpm.lockNow();
