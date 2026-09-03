@@ -23,6 +23,28 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 	private static final String FRP_DISABLED = "frp_disabled";
 
 	@Override
+	public void onProfileProvisioningComplete(Context context, Intent intent) {
+    DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+    ComponentName adminComponent = getWho(context);
+
+    if (Process.myUserHandle().hashCode() != 0 && dpm.isEphemeralUser(adminComponent)) {
+        try {
+            PackageManager pm = context.getPackageManager();
+            ComponentName entryActivity = new ComponentName(context, EntryActivity.class);
+            
+            pm.setComponentEnabledSetting(
+                    entryActivity,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    PackageManager.DONT_KILL_APP
+                );
+
+            dpm.uninstallPackage(adminComponent, context.getPackageName());
+
+        } catch (Exception e) {}
+    } }
+
+
+	@Override
     public void onPasswordFailed(Context context, Intent intent, UserHandle failedUser) {
         super.onPasswordFailed(context, intent, failedUser);
         
