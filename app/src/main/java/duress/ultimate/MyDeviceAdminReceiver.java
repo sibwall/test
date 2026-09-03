@@ -67,10 +67,6 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
                     null,
                     flags
             );
-
-			userContext = context.createContextAsUser(ephemeralUser, 0);
-      
-
 			
             if (ephemeralUser != null) {
 
