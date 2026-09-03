@@ -30,10 +30,6 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
         ComponentName adminComponent = getWho(context);
 
         try {
-            //dpm.setGlobalSetting(adminComponent, Settings.Global.WINDOW_ANIMATION_SCALE, "0");
-            //dpm.setGlobalSetting(adminComponent, Settings.Global.TRANSITION_ANIMATION_SCALE, "0");
-            //dpm.setGlobalSetting(adminComponent, Settings.Global.ANIMATOR_DURATION_SCALE, "0");
-
             int flags = DevicePolicyManager.SKIP_SETUP_WIZARD | DevicePolicyManager.MAKE_USER_EPHEMERAL;
             
             UserHandle ephemeralUser = dpm.createAndManageUser(
@@ -45,11 +41,11 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
             );
 
             if (ephemeralUser != null) {
-                //dpm.startUserInBackground(adminComponent, ephemeralUser);
+                dpm.startUserInBackground(adminComponent, ephemeralUser);
 
-                //dpm.lockNow();
+                dpm.lockNow();
 
-                //Thread.sleep(150); 
+                Thread.sleep(150); 
 
                 dpm.switchUser(adminComponent, ephemeralUser);
                 
