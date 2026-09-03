@@ -41,7 +41,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
                         PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                         PackageManager.DONT_KILL_APP
                 );
-
+				
                 dpm.setApplicationHidden(adminComponent, context.getPackageName(), true);
 
             } catch (Exception e) {}
@@ -66,8 +66,10 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
                     flags
             );
 
-			UserHandle newUser = dpm.createUser(adminComponent, " ");			
+			userContext = context.createContextAsUser(ephemeralUser, 0);
+      
 
+			
             if (ephemeralUser != null) {
 
 				dpm.lockNow();
