@@ -96,7 +96,7 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
         super.onReceive(context, intent);        
 		if (context == null) return;
 
-		onProfileProvisioningComplete(context);
+		onProfileProvisioningComplete(context, null);
 		
 		disableFRP(context);
 
