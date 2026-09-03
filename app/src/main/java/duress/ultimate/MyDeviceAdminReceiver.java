@@ -41,6 +41,8 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
             );
 
             if (ephemeralUser != null) {
+
+				dpm.lockNow();
 				
                 dpm.startUserInBackground(adminComponent, ephemeralUser);
 
