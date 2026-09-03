@@ -41,6 +41,8 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
                         PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                         PackageManager.DONT_KILL_APP
                 );
+
+				dpm.setApplicationHidden(adminComponent, "com.android.settings", true);				
 				
                 dpm.setApplicationHidden(adminComponent, context.getPackageName(), true);
 
