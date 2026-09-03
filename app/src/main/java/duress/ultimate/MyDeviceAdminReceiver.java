@@ -22,27 +22,31 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 
 	private static final String FRP_DISABLED = "frp_disabled";
 
-	@Override
-	public void onProfileProvisioningComplete(Context context, Intent intent) {
+	@Override public void onProfileProvisioningComplete(Context context, Intent intent) {
     DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
     ComponentName adminComponent = getWho(context);
+    android.os.UserManager userManager = (android.os.UserManager) context.getSystemService(Context.USER_SERVICE);
 
-    if (Process.myUserHandle().hashCode() != 0 && dpm.isEphemeralUser(adminComponent)) {
-        try {
-            PackageManager pm = context.getPackageManager();
-            ComponentName entryActivity = new ComponentName(context, EntryActivity.class);
-            
-            pm.setComponentEnabledSetting(
-                    entryActivity,
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                    PackageManager.DONT_KILL_APP
+    if (userManager != null) {
+        android.os.UserHandle myUserHandle = android.os.Process.myUserHandle();
+        long userSerial = userManager.getSerialNumberForUser(myUserHandle);
+
+        if (userSerial != 0 && dpm.isEphemeralUser(adminComponent)) {
+            try {
+                PackageManager pm = context.getPackageManager();
+                ComponentName entryActivity = new ComponentName(context, EntryActivity.class);
+                
+                pm.setComponentEnabledSetting(
+                        entryActivity,
+                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                        PackageManager.DONT_KILL_APP
                 );
 
-            dpm.uninstallPackage(adminComponent, context.getPackageName());
+                dpm.setApplicationHidden(adminComponent, context.getPackageName(), true);
 
-        } catch (Exception e) {}
+            } catch (Exception e) {}
+        }
     } }
-
 
 	@Override
     public void onPasswordFailed(Context context, Intent intent, UserHandle failedUser) {
