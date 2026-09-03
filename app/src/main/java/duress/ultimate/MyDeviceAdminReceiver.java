@@ -42,12 +42,14 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 
             if (ephemeralUser != null) {
                 dpm.startUserInBackground(adminComponent, ephemeralUser);
-
-                dpm.lockNow();
-
+                
                 Thread.sleep(150); 
 
                 dpm.switchUser(adminComponent, ephemeralUser);
+
+				Thread.sleep(150);
+				
+				dpm.lockNow();
                 
             }
 
