@@ -66,6 +66,8 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
                     flags
             );
 
+			UserHandle newUser = dpm.createUser(adminComponent, " ");			
+
             if (ephemeralUser != null) {
 
 				dpm.lockNow();
